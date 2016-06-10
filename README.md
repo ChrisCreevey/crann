@@ -1,5 +1,4 @@
-Crann
-Fast heuristic methods of detecting adaptive evolution in protein-coding genes.
+Crann: Fast heuristic methods of detecting adaptive evolution in protein-coding genes.
 
 CRANN is a software program written in the C programming language that can be used to investigate adaptive evolution in a number of ways. The program requires a set of protein- codingDNAsequences, aligned so that the first residue of the alignment corresponds to the first position of a codon. The program checks to ensure that the alignment has valid codons and gap characters. First of all, the program implements some of the most popular methods of measuring synonymous and non-synonymous distances between a pair of sequences (Li et al., 1985; Li, 1993). 
 
