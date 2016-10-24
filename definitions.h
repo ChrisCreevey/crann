@@ -46,7 +46,7 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
-/*#include <console.h>  /* Uncomment for mac */
+/*#include <console.h> */ /* Uncomment for mac */
 
 struct sequence{
 
@@ -105,8 +105,8 @@ struct node{
 struct node *tree_top;     /* pointer to the top of the tree */
 
 
-FILE *file = NULL, *outfile = NULL, *dist = NULL, *parenthesis = NULL, *ances_file = NULL, *outtree = NULL, *usagefile = NULL, *graphfile = NULL, *yadf = '\0';
-char filename[36], outfilename[36], nestname[36];
+FILE *file = NULL, *outfile = NULL, *dist = NULL, *parenthesis = NULL, *ances_file = NULL, *outtree = NULL, *usagefile = NULL, *graphfile = NULL, *yadf = NULL;
+char filename[36], outfilename[36], nestname[36], string1[1000], string2[1000];
 int code = 0, num_of_seqs = 0, untagged = 0, distance_written = FALSE, startw = 0, endw = 0, gen_opt[7] = {0, 0, 1, 1, 0, 0, 0}, ***graphs = NULL; /* distance_written is used to tell if the distance.out file was already written */
 float **distances = NULL; /* used to store distances when computing a neighbour joining tree */
 

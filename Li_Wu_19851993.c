@@ -271,7 +271,7 @@ void Li_Wu(void)
 	
 	struct sequence *seq1 = start;
 	struct sequence *seq2 = start->next;
-	struct synon *new = '\0';
+	struct synon *new = NULL;
 	
 	clear_results();	
 	if(gen_opt[3] == 1){ startw = 0; endw = (start->length/3 -1); }	
@@ -329,18 +329,18 @@ void Li_Wu(void)
 				}
 		
 			/* now assign the pointers to the previous and next sequence */
-			if (li_wu_end == '\0' || li_wu_start == '\0') 	/* If this is a new list */
+			if (li_wu_end == NULL || li_wu_start == NULL) 	/* If this is a new list */
 				{
 				li_wu_end = new;
 				li_wu_start = new;
 				}		
 			else (li_wu_end)->next = new;
-			new->next = '\0';
+			new->next = NULL;
 			new->previous = li_wu_end;
 			li_wu_end = new;			
 			
 			seq2 = seq1->next;
-			while(seq2 != '\0')
+			while(seq2 != NULL)
 				{
 				if(seq2->tag)
 					{
@@ -438,7 +438,7 @@ void which_sequences(void)
 					do{
 						if(position->tag) printf("\nNo: %d Name: %s ", ((position->seq_num)+1), (position->name));
 						position = position->next;
-						}while(position != '\0');		
+						}while(position != NULL);		
 					choice2 = getint("\n\nPlease select the number of a sequence to be omitted from the analysis, and enter 0 when finished\n", 0, num_of_seqs, 0);
 					if(choice2 == 0) choice2 = '\0';
 					else
@@ -581,7 +581,7 @@ void Li_Wu_movwin(void)
 	
 	struct sequence *seq1 = start;
 	struct sequence *seq2 = start->next;
-	struct synon *new = '\0';
+	struct synon *new = NULL;
 	
 
 	tag_all();
@@ -663,14 +663,14 @@ void Li_Wu_movwin(void)
 */					
 					/* assign pointers to the prevoius and next sequence */
 					
-					if(li_wu_start == '\0' || li_wu_end == '\0')   /* if this is a new list */
+					if(li_wu_start == NULL || li_wu_end == NULL)   /* if this is a new list */
 						{
 						li_wu_end = new;
 						li_wu_start = new;
 						}
 					else li_wu_end->next = new;
 					
-					new->next = '\0';
+					new->next = NULL;
 					new->previous = li_wu_end;
 					li_wu_end = new;
 					
@@ -744,7 +744,7 @@ void display_movwin(int window, int shift)
 		{
 		position = li_wu_start;
 		total = 0;
-		while(position != '\0')
+		while(position != NULL)
 			{
 		/*	fprintf(outfile, "%f \t ", position->Ks[i]);   */
 			total += position->Ks[i];
@@ -762,7 +762,7 @@ void display_movwin(int window, int shift)
 		{
 		position = li_wu_start;
 		total = 0;
-		while(position != '\0')
+		while(position != NULL)
 			{
 		/*	fprintf(outfile, "%f \t ", position->Ka[i]); */
 			total += position->Ka[i];
@@ -782,7 +782,7 @@ void display_movwin(int window, int shift)
 		total = 0;
 		while(position != '\0')
 			{
-		/*	if(position->Ka[i] != 0) fprintf(outfile, "%f \t ", position->Ks[i]/position->Ka[i]); */
+		*//*	if(position->Ka[i] != 0) fprintf(outfile, "%f \t ", position->Ks[i]/position->Ka[i]); */
 /*			if(position->Ka[i] != 0) total += position->Ks[i]/position->Ka[i];
 			position = position->next;
 			}
@@ -798,9 +798,9 @@ void display_movwin(int window, int shift)
 		total = 0;
 		while(position != '\0')
 			{
-		/*	if(position->Ks[i] != 0) fprintf(outfile, "%f \t ", position->Ka[i]/position->Ks[i]); */
+		*//*	if(position->Ks[i] != 0) fprintf(outfile, "%f \t ", position->Ka[i]/position->Ks[i]); */
 	/*		if(position->Ks[i] != 0)  total += position->Ka[i]/position->Ks[i];
-		/*	else fprintf(outfile, "0.000000 \t");  */
+		*//*	else fprintf(outfile, "0.000000 \t");  */
 	/*		position = position->next;
 			}
 		i++;
@@ -816,7 +816,7 @@ void display_movwin(int window, int shift)
 		{
 		position = li_wu_start;
 		total = 0;
-		while(position != '\0')
+		while(position != NULL)
 			{
 		/*	fprintf(outfile, "%f \t ", position->varKs[i]); */
 			total += position->varKs[i];
@@ -834,7 +834,7 @@ void display_movwin(int window, int shift)
 		{
 		position = li_wu_start;
 		total = 0;
-		while(position != '\0')
+		while(position != NULL)
 			{
 		/*	fprintf(outfile, "%f \t ", position->varKa[i]); */
 			total += position->varKa[i];

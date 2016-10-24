@@ -43,7 +43,7 @@ void linked_tree(float **tree_array)
 	{
 	int *done_col, row = 0, col = 0, taxa = 0, one = 0, i = 0, seq = 0, j =0, x= 0, y = 0, joining = FALSE;
 	
-	struct node **build = '\0', *position = '\0';
+	struct node **build = NULL, *position = NULL;
 	
 	struct sequence *list_pos = start;
 	
@@ -68,7 +68,7 @@ void linked_tree(float **tree_array)
 		clean_exit();
 		} 
 	for(i=0; i<num_of_seqs - untagged - 2; i++)
-		build[i] = '\0';
+		build[i] = NULL;
 	
 	
 	for(row = 0; row< num_of_seqs - untagged; row++) /* While we are not at the end of the array */
@@ -89,11 +89,11 @@ void linked_tree(float **tree_array)
 				clean_exit();
 				}
 			/* initialise all parts ofthe node */		
-			position->seq_num1 = '\0';
-			position->seq_num2 = '\0';
-			position->node1 = '\0';
-			position->node2 = '\0';
-			position->prev = '\0';
+			position->seq_num1 = NULL;
+			position->seq_num2 = NULL;
+			position->node1 = NULL;
+			position->node2 = NULL;
+			position->prev = NULL;
 			position->ancestor[0] = '\0';
 			position->ances_seq = malloc(((start->length)/3 +1 )*sizeof(int));
 			if(!position->ances_seq)
@@ -117,14 +117,14 @@ void linked_tree(float **tree_array)
 						{
 						list_pos = start;
 						seq = 0;
-						while(!list_pos->tag && list_pos != '\0') list_pos = list_pos->next;   /* as long as the sequence is tagged and we are not at the end of the list, go to the next sequence in the list */
-						while(list_pos != '\0' && seq != col)         /* While we haven't found the sequence identified by the position on the tree array */
+						while(!list_pos->tag && list_pos != NULL) list_pos = list_pos->next;   /* as long as the sequence is tagged and we are not at the end of the list, go to the next sequence in the list */
+						while(list_pos != NULL && seq != col)         /* While we haven't found the sequence identified by the position on the tree array */
 							{
 						 	list_pos = list_pos->next;
 						 	seq++;
-							while(!list_pos->tag && list_pos != '\0') list_pos = list_pos->next;
+							while(!list_pos->tag && list_pos != NULL) list_pos = list_pos->next;
 				 			}
-						if(list_pos != '\0')
+						if(list_pos != NULL)
 							{
 							position->seq_num1 = list_pos;  /* each node on the tree will point to the actual sequence it refences in the linked list */
 							taxa =  2;
@@ -137,14 +137,14 @@ void linked_tree(float **tree_array)
 							{
 							list_pos = start;
 							seq = 0;	
-							while(!list_pos->tag && list_pos != '\0') list_pos = list_pos->next;
-							while(list_pos != '\0' && seq != col)
+							while(!list_pos->tag && list_pos != NULL) list_pos = list_pos->next;
+							while(list_pos != NULL && seq != col)
 								{
 							 	list_pos = list_pos->next;
 							 	seq++;
-								while(!list_pos->tag && list_pos != '\0') list_pos = list_pos->next;
+								while(!list_pos->tag && list_pos != NULL) list_pos = list_pos->next;
 					 			}
-							if(list_pos != '\0')
+							if(list_pos != NULL)
 								{
 								position->seq_num2 = list_pos;
 								taxa = 3;
@@ -161,7 +161,7 @@ void linked_tree(float **tree_array)
 							{
 							position->node1 = build[done_col[col]]; /* node1 of this node is assigned to the joining last made with this clade, we know that this joining includes the clade with this taxa in it, and something else */
 							build[done_col[col]]->prev = position;
-							build[done_col[col]] = '\0';
+							build[done_col[col]] = NULL;
 							taxa = 2;
 							one = done_col[col];
 							done_col[col] = row;
@@ -175,7 +175,7 @@ void linked_tree(float **tree_array)
 									{
 									position->node2 = build[done_col[col]];
 									build[done_col[col]]->prev = position;
-									build[done_col[col]] = '\0';
+									build[done_col[col]] = NULL;
 									taxa = 3;
 									done_col[col] = row;
 									}
@@ -192,7 +192,7 @@ void linked_tree(float **tree_array)
 					}
 				}
 			build[row] = position;
-			position = '\0';
+			position = NULL;
 			}
 		}
 
@@ -203,35 +203,35 @@ void linked_tree(float **tree_array)
 	taxa = 1;
 	for(i=0; i<num_of_seqs - untagged - 2; i++)
 		{
-		if(build[i] != '\0')
+		if(build[i] != NULL)
 			{
 			if(taxa == 1)
 				{
 				tree_top = build[i];
-				build[i] = '\0';
+				build[i] = NULL;
 				taxa = 2;
 				}
 			else
 				{	
 				if(taxa != 1)    /* if there is a single sequence at the end to be joined */
 					{
-					if(((build[i]->seq_num1 != '\0' &&  build[i]->seq_num2 == '\0')  || (build[i]->seq_num1 == '\0' && build[i]->seq_num2 != '\0')) && (build[i]->node1 == '\0' && build[i]->node2 == '\0'))
+					if(((build[i]->seq_num1 != NULL &&  build[i]->seq_num2 == NULL)  || (build[i]->seq_num1 == NULL && build[i]->seq_num2 != NULL)) && (build[i]->node1 == NULL && build[i]->node2 == NULL))
 						{
-						if(build[i]->seq_num1 != '\0')
+						if(build[i]->seq_num1 != NULL)
 							{
 							build[i]->node2 = tree_top;   /* With only one taxa we can make this new node the tree top with the free noe pointing to the rest of the tree. */
-							build[i]->prev = '\0';           
+							build[i]->prev = NULL;           
 							tree_top->prev = build[i];
 							tree_top = build[i];
-							build[i] = '\0';
+							build[i] = NULL;
 							}
 						else
 							{
 							build[i]->node1 = tree_top;
-							build[i]->prev = '\0';
+							build[i]->prev = NULL;
 							tree_top->prev = build[i];
 							tree_top = build[i];
-							build[i] = '\0';
+							build[i] = NULL;
 							}
 						}
 					else
@@ -243,11 +243,11 @@ void linked_tree(float **tree_array)
 							clean_exit();
 							}
 					
-						position->seq_num1 = '\0';
-						position->seq_num2 = '\0';
+						position->seq_num1 = NULL;
+						position->seq_num2 = NULL;
 						position->node1 = build[i];
 						position->node2 = tree_top;
-						position->prev = '\0';
+						position->prev = NULL;
 						position->ancestor[0] = '\0';
 						position->ances_seq = malloc((((start->length)/3) +1) * sizeof(int));
 						if(!position->ances_seq)
@@ -264,11 +264,11 @@ void linked_tree(float **tree_array)
 						tree_top->prev = position;
 						
 					
-						build[i] = '\0';
+						build[i] = NULL;
 						
 						tree_top = position;
 					
-						position = '\0';
+						position = NULL;
 						}											
 					}
 				}
@@ -276,17 +276,17 @@ void linked_tree(float **tree_array)
 		}
 	
 
-	if(done_col != '\0')
+	if(done_col != NULL)
 		{
 		free(done_col);	
-		done_col = '\0';
+		done_col = NULL;
 		}
 	
-	if(build != '\0')
+	if(build != NULL)
 		{
-		for(i=0; i<(num_of_seqs - untagged - 2); i++) build[i] = '\0';
+		for(i=0; i<(num_of_seqs - untagged - 2); i++) build[i] = NULL;
 		free(build);
-		build = '\0';
+		build = NULL;
 		}
 	}	
 	
@@ -303,22 +303,22 @@ int val_tree(struct node *position)
 	{
 	int result = FALSE, returned = FALSE;
 	
-	if(position->node1 != '\0') result = val_tree(position->node1);
+	if(position->node1 != NULL) result = val_tree(position->node1);
 	if(result == TRUE) returned = TRUE;
-	if(position->node2 != '\0') result = val_tree(position->node2);
+	if(position->node2 != NULL) result = val_tree(position->node2);
 	if(result == TRUE) returned = TRUE;
 
 
-	if(position->node1 != '\0' && position->node2 != '\0')
+	if(position->node1 != NULL && position->node2 != NULL)
 		{
-		if(position->seq_num1 != '\0')
+		if(position->seq_num1 != NULL)
 			{
-			position->seq_num1 = '\0';
+			position->seq_num1 = NULL;
 			returned = TRUE;
 			}
-		if(position->seq_num2 != '\0')
+		if(position->seq_num2 != NULL)
 			{
-			position->seq_num2 = '\0';
+			position->seq_num2 = NULL;
 			returned = TRUE;
 			}
 		}
@@ -336,17 +336,17 @@ int val_tree(struct node *position)
 
 struct node * find_outgroup (struct node *position)
 	{
-	struct node *now = '\0';
+	struct node *now = NULL;
 
 
-	if((position->seq_num1) != '\0')
+	if((position->seq_num1) != NULL)
 		if((position->seq_num1)->outgroup == TRUE) now = position;
-	if((position->seq_num2) != '\0')
+	if((position->seq_num2) != NULL)
 		if((position->seq_num2)->outgroup == TRUE) now = position;
 	
 	/* we want to find the first part of the outgroup that we come across */	
-	if(position->node1 != '\0' && now == '\0') now = find_outgroup(position->node1);
-	if(position->node2 != '\0' && now == '\0') now = find_outgroup(position->node2);
+	if(position->node1 != NULL && now == NULL) now = find_outgroup(position->node1);
+	if(position->node2 != NULL && now == NULL) now = find_outgroup(position->node2);
 	
 
 	return(now);
@@ -358,21 +358,21 @@ struct node * find_outgroup (struct node *position)
 void travel_down(struct node *position, int *found, int *total)
 	{
 	
-	if(position->seq_num1 != '\0')
+	if(position->seq_num1 != NULL)
 		{
 		if(outgroup[(position->seq_num1)->seq_num]) found++;
 		total++;
 		}
-	if(position->seq_num2 != '\0')
+	if(position->seq_num2 != NULL)
 		{
 		if(outgroup[(position->seq_num2)->seq_num]) found++;
 		total++;
 		}
 	
-	if(position->node1 != '\0')
+	if(position->node1 != NULL)
 		travel_down(position->node1, found, total);
 		
-	if(position->node2 != '\0')
+	if(position->node2 != NULL)
 		travel_down(position->node2, found, total);
 		
 	}
@@ -384,26 +384,26 @@ void travel_down(struct node *position, int *found, int *total)
 	outgroup is all on one side of the tree */	
 int check_divided(struct node *position)
 	{
-	struct node *left = '\0', *right = '\0';
+	struct node *left = NULL, *right = NULL;
 	int answer = FALSE;
 	
-	if(position->node1 != '\0')
+	if(position->node1 != NULL)
 		left = find_outgroup(position->node1);
 		
-	if(position->node2 != '\0')
+	if(position->node2 != NULL)
 		right = find_outgroup(position->node2);
 		
 	
-	if(left != '\0' && right != '\0')
+	if(left != NULL && right != NULL)
 		{
-		if(left->node1 != '\0' || left->node2 != '\0')
+		if(left->node1 != NULL || left->node2 != NULL)
 			{
 			prepare_tree(left, 1);
 			answer = check_divided(tree_top);
 			}
 		if(answer == FALSE)
 			{
-			if(right->node1 != '\0' || right->node2 != '\0')
+			if(right->node1 != NULL || right->node2 != NULL)
 				{
 				prepare_tree(right, 1);
 				answer = check_divided(tree_top);
@@ -422,7 +422,7 @@ int check_divided(struct node *position)
    
 void do_rerooting(struct node *position)
 	{		
-	struct node *newnode = '\0';
+	struct node *newnode = NULL;
 	int j = 0;
 	
 	
@@ -433,11 +433,11 @@ void do_rerooting(struct node *position)
 		clean_exit();
 		}
 
-	newnode->seq_num1 = '\0';
-	newnode->seq_num2 = '\0';
-	newnode->node1 = '\0';
-	newnode->node2 = '\0';
-	newnode->prev = '\0';
+	newnode->seq_num1 = NULL;
+	newnode->seq_num2 = NULL;
+	newnode->node1 = NULL;
+	newnode->node2 = NULL;
+	newnode->prev = NULL;
 	newnode->ancestor[0] = '\0';
 	newnode->ances_seq = malloc(((start->length)/3) +1 * sizeof(int));
 	if(!newnode->ances_seq)
@@ -453,7 +453,7 @@ void do_rerooting(struct node *position)
 	newnode->node2 = position;
 	newnode->prev = position->prev;
 	position->prev = newnode;
-	if(newnode->prev != '\0')
+	if(newnode->prev != NULL)
 		{
 		if((newnode->prev)->node1 == position)
 			(newnode->prev)->node1 = newnode;
@@ -467,11 +467,11 @@ void do_rerooting(struct node *position)
 		reroot_tree(position);
 				
 										
-		if(position->node1 == '\0')
+		if(position->node1 == NULL)
 			position->node1 = position->prev;
 	   	else
   		 	position->node2 = position->prev;
-	 	position->prev = '\0';
+	 	position->prev = NULL;
 		}
 	}
 
@@ -483,18 +483,18 @@ void do_rerooting(struct node *position)
 
 int prepare_tree(struct node *position, int count)
 	{
-	struct node *newnode = '\0', *tmp = '\0';
+	struct node *newnode = NULL, *tmp = NULL;
 	int j = 0, valid = TRUE;
 	
 	
 	/***********  allocate new node *****************/
 	newnode = malloc(sizeof(node_type));
 
-	newnode->seq_num1 = '\0';
-	newnode->seq_num2 = '\0';
-	newnode->node1 = '\0';
-	newnode->node2 = '\0';
-	newnode->prev = '\0';
+	newnode->seq_num1 = NULL;
+	newnode->seq_num2 = NULL;
+	newnode->node1 = NULL;
+	newnode->node2 = NULL;
+	newnode->prev = NULL;
 	newnode->ancestor[0] = '\0';
 	newnode->ances_seq = malloc((((start->length)/3) +1) * sizeof(int));
 	if(!newnode->ances_seq)
@@ -510,28 +510,28 @@ int prepare_tree(struct node *position, int count)
 	newnode->gaprun = 0;
 	if(count == 1)  /* if there is only 1 taxa defined as the out group */
 		{
-		if(position->seq_num1 != '\0' && position->seq_num2 != '\0')  /* if the outgroup has been paired with a taxa */
+		if(position->seq_num1 != NULL && position->seq_num2 != NULL)  /* if the outgroup has been paired with a taxa */
 			{
 			if((position->seq_num1)->outgroup) /* if seq_num1 points to the outgroup */
 				{
 				newnode->seq_num1 = position->seq_num1;
-				position->seq_num1 = '\0';
+				position->seq_num1 = NULL;
 				position->node1 = newnode;
 				}
 			else
 				{
 				newnode->seq_num2 = position->seq_num2;
-				position->seq_num2 = '\0';
+				position->seq_num2 = NULL;
 				position->node2 = newnode;
 				}
 			newnode->prev = position;
 			position = newnode;
 			reroot_tree(position);
-			if(position->seq_num1 == '\0')
+			if(position->seq_num1 == NULL)
 				position->node1 = position->prev;
    			else
    				position->node2 = position->prev;
-  			position->prev = '\0';
+  			position->prev = NULL;
 			}
 			
 		else  /* if the outgroup is on its own */
@@ -549,21 +549,21 @@ int prepare_tree(struct node *position, int count)
 				(newnode->prev)->node2 = newnode;	
 				}
 				reroot_tree(newnode);
-			if(newnode->node1 == '\0')
+			if(newnode->node1 == NULL)
 				newnode->node1 = newnode->prev;
    			else
    				newnode->node2 = newnode->prev;
-  			newnode->prev = '\0';
+  			newnode->prev = NULL;
 
 			
-			if(position->node1 != '\0')
+			if(position->node1 != NULL)
 				{
 				tree_top->node2 = position->node1;
 				(position->node1)->prev = tree_top;
 				position->node1 = tree_top;
 				tree_top->prev = position;
 				tree_top = position;
-				tree_top->prev = '\0';
+				tree_top->prev = NULL;
 				}
 			else
 				{
@@ -572,7 +572,7 @@ int prepare_tree(struct node *position, int count)
 				position->node2 = tree_top;
 				tree_top->prev = position;
 				tree_top = position;
-				tree_top->prev = '\0';
+				tree_top->prev = NULL;
 				}
 			}	
 		}	
@@ -580,7 +580,7 @@ int prepare_tree(struct node *position, int count)
 		{
 		/* first check to see if the taxa are valid. */
 		tmp = find_non_outgroup(position);
-		if(tmp == '\0')
+		if(tmp == NULL)
 			{
 			if(count_taxa(position) == count)
 				{
@@ -596,11 +596,11 @@ int prepare_tree(struct node *position, int count)
 				/* reroot the tree about the present position */
 				reroot_tree(newnode);
 										
-				if(newnode->node1 == '\0')
+				if(newnode->node1 == NULL)
 					newnode->node1 = newnode->prev;
    				else
    					newnode->node2 = newnode->prev;
-  				newnode->prev = '\0';
+  				newnode->prev = NULL;
 
 			
 				}
@@ -622,11 +622,11 @@ int prepare_tree(struct node *position, int count)
  	{
  	int i = 0;
  	
- 	if(position->node1 != '\0') i += count_taxa(position->node1);
- 	if(position->node2 != '\0') i += count_taxa(position->node2);
+ 	if(position->node1 != NULL) i += count_taxa(position->node1);
+ 	if(position->node2 != NULL) i += count_taxa(position->node2);
  	
- 	if(position->seq_num1 != '\0') i++;
- 	if(position->seq_num2 != '\0') i++;
+ 	if(position->seq_num1 != NULL) i++;
+ 	if(position->seq_num2 != NULL) i++;
 
 	return(i);
 	}
@@ -652,7 +652,7 @@ void reroot_tree(struct node *position)
 		(position->prev)->node2 = (position->prev)->prev;
 
 	
-	if((position->prev)->prev != '\0')
+	if((position->prev)->prev != NULL)
 		{
 		reroot_tree(position->prev);
 		}
@@ -667,30 +667,30 @@ void reroot_tree(struct node *position)
 	which would contain no information for the rerooted tree */
 int prune_tree(struct node *position)
 	{
-	struct node *place = '\0';
+	struct node *place = NULL;
 	int i = 0, done = FALSE;
 	
-	if(position->seq_num1 == '\0' && position->seq_num2 == '\0')
+	if(position->seq_num1 == NULL && position->seq_num2 == NULL)
 		{
-		if(position->node1 == '\0' || position->node2 == '\0')
+		if(position->node1 == NULL || position->node2 == NULL)
 			{
-			if(position->node1 == '\0' && position->node2 == '\0')   /* If the node is at the end of branch (leaf) */
+			if(position->node1 == NULL && position->node2 == NULL)   /* If the node is at the end of branch (leaf) */
 				{
 				if((position->prev)->node1 == position)
-					(position->prev)->node1 = '\0';
-				else (position->prev)->node2 = '\0';
+					(position->prev)->node1 = NULL;
+				else (position->prev)->node2 = NULL;
 				
 				place = position;
 				position = place->prev;
-				if(place->ances_seq != '\0') free(place->ances_seq);
-				place->ances_seq = '\0';
-				if(place != '\0') free(place);
-				place = '\0';
+				if(place->ances_seq != NULL) free(place->ances_seq);
+				place->ances_seq = NULL;
+				if(place != NULL) free(place);
+				place = NULL;
 				done = TRUE;
 				}
 			else  /* if the node appears in the middle of a branch */
 				{
-				if(position->node1 != '\0')
+				if(position->node1 != NULL)
 					{
 					place = position->node1;
 					(position->node1)->prev = position->prev;
@@ -707,50 +707,50 @@ int prune_tree(struct node *position)
 				
 				place = position;
 				position = place->prev;
-				if(place->ances_seq != '\0') free(place->ances_seq);
-				place->ances_seq = '\0';
-				if(place != '\0') free(place);
-				place = '\0';
+				if(place->ances_seq != NULL) free(place->ances_seq);
+				place->ances_seq = NULL;
+				if(place != NULL) free(place);
+				place = NULL;
 				done = TRUE;
 				}
 			}
 		}
 	/* Ths next section checks to see if there is a single taxa on its own at the bottom of a branch, 
 		This breaks the rules about branchs, so the taxa is included in the node previous to it */
-	if(position->node1 == '\0' && position->node2 == '\0')
-		if(position->seq_num1 == '\0' || position->seq_num2 == '\0')
+	if(position->node1 == NULL && position->node2 == NULL)
+		if(position->seq_num1 == NULL || position->seq_num2 == NULL)
 			{
 			if((position->prev)->node1 == position)
 				{
-				if(position->seq_num1 != '\0')
+				if(position->seq_num1 != NULL)
 					(position->prev)->seq_num1 = position->seq_num1;
 				else (position->prev)->seq_num1 = position->seq_num2;
-				(position->prev)->node1 = '\0';
+				(position->prev)->node1 = NULL;
 				}
 			else
 				{
-				if(position->seq_num1 != '\0')
+				if(position->seq_num1 != NULL)
 					(position->prev)->seq_num2 = position->seq_num1;
 				else (position->prev)->seq_num2 = position->seq_num2;
-				(position->prev)->node2 = '\0';
+				(position->prev)->node2 = NULL;
 				}
 			
 			place = position;
 			position = place->prev;
-			if(place->ances_seq != '\0') free(place->ances_seq);
-			place->ances_seq = '\0';
-			if(place != '\0') free(place);
-			place = '\0';
+			if(place->ances_seq != NULL) free(place->ances_seq);
+			place->ances_seq = NULL;
+			if(place != NULL) free(place);
+			place = NULL;
 			done = TRUE;
 			}
 			
 	
 	
 	
-	if(position->node1 != '\0')
+	if(position->node1 != NULL)
 		if(prune_tree(position->node1) == TRUE) done = TRUE;
 		
-	if(position->node2 != '\0')
+	if(position->node2 != NULL)
 		if(prune_tree(position->node2) == TRUE) done = TRUE;
 		
 	return(done);	
@@ -760,7 +760,7 @@ int prune_tree(struct node *position)
 	
 int check_outgroup(int count)
 	{
-	struct node *position = '\0';
+	struct node *position = NULL;
 	int answer = FALSE, number = 0, proceed = TRUE;
 		
 	/* because of the nature of the storage of the tree, if the tree is originally rooted in the middle
@@ -768,7 +768,7 @@ int check_outgroup(int count)
 	   stop this from happening is to firstly make sure that the tree is rooted somewhere away from the out groups */
 	
 	
-	if((position = find_non_outgroup(tree_top)) != '\0')
+	if((position = find_non_outgroup(tree_top)) != NULL)
 		{
 		if(position != tree_top)
 			prepare_tree(position, 1);
@@ -776,7 +776,7 @@ int check_outgroup(int count)
 /*		number = 0;
 		if(tree_top != '\0')
 			{
-			check_tree(tree_top, &number);  /* make sure the tree has been created correctly */
+			check_tree(tree_top, &number);  *//* make sure the tree has been created correctly */
 /*			printf("\npress return to continue (rerooted about an ingroup)");
 			getchar();	
 			}
@@ -787,7 +787,7 @@ int check_outgroup(int count)
 		number = 0;
 		if(tree_top != '\0')
 			{
-			check_tree(tree_top, &number);  /* make sure the tree has been created correctly */
+			check_tree(tree_top, &number);  *//* make sure the tree has been created correctly */
 /*			printf("\npress return to continue (rerooted about an ingroup)");
 			getchar();	
 			}
@@ -795,13 +795,13 @@ int check_outgroup(int count)
 */
 		if(count == 1) /* If there is only 1 outgroup, then we need to make sure that the tree is not already rooted about it before proceeding */
 			{
-			if(tree_top->seq_num1 != '\0' && tree_top->seq_num2 == '\0')
+			if(tree_top->seq_num1 != NULL && tree_top->seq_num2 == NULL)
 				{
 				if(tree_top->seq_num1->outgroup == TRUE)
 					proceed = FALSE;
 					answer = TRUE;
 				}
-			if(tree_top->seq_num2 != '\0' && tree_top->seq_num1 == '\0')
+			if(tree_top->seq_num2 != NULL && tree_top->seq_num1 == NULL)
 				{
 				if(tree_top->seq_num2->outgroup == TRUE)
 					proceed = FALSE;
@@ -811,7 +811,7 @@ int check_outgroup(int count)
 				
 		if(proceed)
 			{
-			if((position = find_outgroup(tree_top)) != '\0') /* Find a part of the out group */
+			if((position = find_outgroup(tree_top)) != NULL) /* Find a part of the out group */
 				{
 				if(prepare_tree(position, count) == TRUE)
 					 answer = TRUE;		
@@ -838,22 +838,22 @@ int check_outgroup(int count)
 		
 struct node * find_non_outgroup(struct node *position)
 	{
-	struct node *found = '\0';
+	struct node *found = NULL;
 	
 
-	if(position->seq_num1 != '\0')
+	if(position->seq_num1 != NULL)
 		{
 		if(!(position->seq_num1)->outgroup)
 			found = position;	
 		}
-	if(found == '\0' && position->seq_num2 != '\0')
+	if(found == NULL && position->seq_num2 != NULL)
 		{
 		if(!(position->seq_num2)->outgroup)
 			found = position;
 		}
 		
-	if(found == '\0' && position->node1 != '\0')	found = find_non_outgroup(position->node1);
-	if(found == '\0' && position->node2 != '\0')    found = find_non_outgroup(position->node2);
+	if(found == NULL && position->node1 != NULL)	found = find_non_outgroup(position->node1);
+	if(found == NULL && position->node2 != NULL)    found = find_non_outgroup(position->node2);
 	
 	return(found);
 	
@@ -865,19 +865,19 @@ struct node * find_non_outgroup(struct node *position)
 void dismantle(struct node *position, int *count)
 	{
 	int i=0;
-	struct node *place = '\0';
+	struct node *place = NULL;
 	
-	if(position->node1 != '\0') dismantle(position->node1, count);
-	if(position->node2 != '\0') dismantle(position->node2, count);
+	if(position->node1 != NULL) dismantle(position->node1, count);
+	if(position->node2 != NULL) dismantle(position->node2, count);
 	
-	if(position->ances_seq != '\0') free(position->ances_seq); 
-	position->ances_seq = '\0';
+	if(position->ances_seq != NULL) free(position->ances_seq); 
+	position->ances_seq = NULL;
 	 
 		
 	place = position;
 	position = place->prev;
-	if(place != '\0') free(place);
-	place = '\0';
+	if(place != NULL) free(place);
+	place = NULL;
 	
 	*count = *count + 1;
 	}
@@ -919,12 +919,12 @@ void write_tree1(struct node *position, char *last, int *count, float **pvalue)
 	
 	if(*last == ')') fprintf(outtree, ",");
 	fprintf(outtree, "(");
-	if(position->seq_num1 != '\0')
+	if(position->seq_num1 != NULL)
 		{
 		fprintf(outtree, "%s,", (position->seq_num1)->name);
 		i++;
 		}
-	if(position->seq_num2 != '\0')
+	if(position->seq_num2 != NULL)
 		{
 		fprintf(outtree, "%s", (position->seq_num2)->name);
 		if(i == 0) fprintf(outtree, ",");
@@ -932,10 +932,10 @@ void write_tree1(struct node *position, char *last, int *count, float **pvalue)
 
 	*last = ',';
 
-	if(position->node1 != '\0') write_tree1(position->node1, last, count, pvalue);
-	if(position->node2 != '\0') write_tree1(position->node2, last, count, pvalue);
+	if(position->node1 != NULL) write_tree1(position->node1, last, count, pvalue);
+	if(position->node2 != NULL) write_tree1(position->node2, last, count, pvalue);
 	fprintf(outtree, ")");
-	if(position->prev != '\0')
+	if(position->prev != NULL)
 		{
 		if(pvalue[*count][1] < 0.050 || (pvalue[*count][2] <= 0.05 && pvalue[*count][2] != 0)) fprintf(outtree, "%d ",*count);
 		}
@@ -952,12 +952,12 @@ void write_tree2(struct node *position, char *last, int *count)
 	
 	if(*last == ')') fprintf(outtree, ",");
 	fprintf(outtree, "(");
-	if(position->seq_num1 != '\0')
+	if(position->seq_num1 != NULL)
 		{
 		fprintf(outtree, "%s,", (position->seq_num1)->name);
 		i++;
 		}
-	if(position->seq_num2 != '\0')
+	if(position->seq_num2 != NULL)
 		{
 		fprintf(outtree, "%s", (position->seq_num2)->name);
 		if(i == 0) fprintf(outtree, ",");
@@ -965,10 +965,10 @@ void write_tree2(struct node *position, char *last, int *count)
 
 	*last = ',';
 
-	if(position->node1 != '\0') write_tree2(position->node1, last, count);
-	if(position->node2 != '\0') write_tree2(position->node2, last, count);
+	if(position->node1 != NULL) write_tree2(position->node1, last, count);
+	if(position->node2 != NULL) write_tree2(position->node2, last, count);
 	fprintf(outtree, ")");
-	if(position->prev != '\0')
+	if(position->prev != NULL)
 		{
 		li = (position->li93_1[0]/position->li93_1[1]);
 		if(position->li93_1[1] != 0 && li > 1 ) fprintf(outtree, "1_%f", li);
@@ -988,12 +988,12 @@ void write_tree3(struct node *position, char *last, int *count, float **pvalue)
 	
 	if(*last == ')') fprintf(outtree, ",");
 	fprintf(outtree, "(");
-	if(position->seq_num1 != '\0')
+	if(position->seq_num1 != NULL)
 		{
 		fprintf(outtree, "%s,", (position->seq_num1)->name);
 		i++;
 		}
-	if(position->seq_num2 != '\0')
+	if(position->seq_num2 != NULL)
 		{
 		fprintf(outtree, "%s", (position->seq_num2)->name);
 		if(i == 0) fprintf(outtree, ",");
@@ -1001,10 +1001,10 @@ void write_tree3(struct node *position, char *last, int *count, float **pvalue)
 
 	*last = ',';
 
-	if(position->node1 != '\0') write_tree3(position->node1, last, count, pvalue);
-	if(position->node2 != '\0') write_tree3(position->node2, last, count, pvalue);
+	if(position->node1 != NULL) write_tree3(position->node1, last, count, pvalue);
+	if(position->node2 != NULL) write_tree3(position->node2, last, count, pvalue);
 	fprintf(outtree, ")");
-	if(position->prev != '\0')
+	if(position->prev != NULL)
 		{
 		fprintf(outtree, "%d ",*count);
 		}
@@ -1056,16 +1056,16 @@ int input_tree(char *c, struct node *previous, int num)
 	{
 	char temp[13] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
 	int i = 0, j = 0, end = FALSE, error = FALSE, count = 0, score = 0, highest = 0;
-	struct sequence *seq = start, *same = '\0';
-	struct node *extra = '\0', *position  = '\0';
+	struct sequence *seq = start, *same = NULL;
+	struct node *extra = NULL, *position  = NULL;
 
 	position = malloc(sizeof(node_type));
-	if(previous == '\0') tree_top = position;
+	if(previous == NULL) tree_top = position;
 				
-	position->seq_num1 = '\0';
-	position->seq_num2 = '\0';
-	position->node1 = '\0';
-	position->node2 = '\0';
+	position->seq_num1 = NULL;
+	position->seq_num2 = NULL;
+	position->node1 = NULL;
+	position->node2 = NULL;
 	position->prev = previous;
 	position->ancestor[0] = '\0';
 	position->ances_seq = malloc((((start->length)/3 )+1) * sizeof(int));
@@ -1080,7 +1080,7 @@ int input_tree(char *c, struct node *previous, int num)
 	
 
 	
-	if(previous != '\0')
+	if(previous != NULL)
 		{
 		if(num == 0)
 			(position->prev)->node1 = position;
@@ -1100,11 +1100,11 @@ int input_tree(char *c, struct node *previous, int num)
                                     {
                                     extra = malloc(sizeof(node_type));
 				
-                                    extra->seq_num1 = '\0';
-                                    extra->seq_num2 = '\0';
-                                    extra->node1 = '\0';
-                                    extra->node2 = '\0';
-                                    extra->prev = '\0';
+                                    extra->seq_num1 = NULL;
+                                    extra->seq_num2 = NULL;
+                                    extra->node1 = NULL;
+                                    extra->node2 = NULL;
+                                    extra->prev = NULL;
                                     extra->ancestor[0] = '\0';
                                     extra->ances_seq = malloc((((start->length)/3) +1 )* sizeof(int));
                                     if(!extra->ances_seq)
@@ -1120,7 +1120,7 @@ int input_tree(char *c, struct node *previous, int num)
                                     extra->node1 = position;
                                     extra->prev = position->prev;
                                     position->prev = extra;
-                                    if(extra->prev == '\0') tree_top = extra;
+                                    if(extra->prev == NULL) tree_top = extra;
                                     position = extra;
                                     previous = position;
                                     }
@@ -1158,9 +1158,9 @@ int input_tree(char *c, struct node *previous, int num)
 				   This is done by giving a similarity score to every sequence name and the largest score is assigned to the tree.
 				   This works by adding 1 to the total for every character in the right position in the sequence name */ 		
 				seq = start;
-				same = '\0';
+				same = NULL;
 				highest = 0;
-				while(seq != '\0')
+				while(seq != NULL)
 					{
 					score = 0;
 					for(i=0; i<13; i++)
@@ -1177,7 +1177,7 @@ int input_tree(char *c, struct node *previous, int num)
 					}
 				
 				seq = same;
-				if(seq == '\0') error = TRUE;
+				if(seq == NULL) error = TRUE;
 				else
 					{			
 					if(count == 0)	position->seq_num1 = seq;
@@ -1186,11 +1186,11 @@ int input_tree(char *c, struct node *previous, int num)
 						{
 						extra = malloc(sizeof(node_type));
 				
-						extra->seq_num1 = '\0';
-						extra->seq_num2 = '\0';
-						extra->node1 = '\0';
-						extra->node2 = '\0';
-						extra->prev = '\0';
+						extra->seq_num1 = NULL;
+						extra->seq_num2 = NULL;
+						extra->node1 = NULL;
+						extra->node2 = NULL;
+						extra->prev = NULL;
 						extra->ancestor[0] = '\0';
 						extra->ances_seq = malloc((((start->length)/3) +1 )* sizeof(int));
 						if(!extra->ances_seq)
@@ -1208,7 +1208,7 @@ int input_tree(char *c, struct node *previous, int num)
                                                 extra->prev = position->prev;
 						position->prev = extra;
                                                 
-						if(extra->prev == '\0') tree_top = extra;
+						if(extra->prev == NULL) tree_top = extra;
                                                 position = extra;
                                                 previous = position;
 						}
@@ -1230,28 +1230,28 @@ int input_tree(char *c, struct node *previous, int num)
 void tree_pairwise_distances(struct node *position)
 	{
 	
-	if(position->node1 != '\0') tree_pairwise_distances(position->node1);
-	if(position->node2 != '\0') tree_pairwise_distances(position->node2);
+	if(position->node1 != NULL) tree_pairwise_distances(position->node1);
+	if(position->node2 != NULL) tree_pairwise_distances(position->node2);
 	
 	
-	if(position->prev != '\0')
+	if(position->prev != NULL)
 		{
-		if(position->node1 != '\0')
+		if(position->node1 != NULL)
 			{
 			li_wu_complete(position->ances_seq, (position->node1)->ances_seq, position->li93_1);
 			
 			}
-		if(position->node2 != '\0')
+		if(position->node2 != NULL)
 			{
 			li_wu_complete(position->ances_seq, (position->node2)->ances_seq, position->li93_2);
 			
 			}
-		if(position->seq_num1 != '\0')
+		if(position->seq_num1 != NULL)
 			{
 			li_wu_complete((position->seq_num1)->bases, position->ances_seq, position->li93_1);
 			
 			}
-		if(position->seq_num2 != '\0')	
+		if(position->seq_num2 != NULL)	
 			{
 			li_wu_complete((position->seq_num2)->bases, position->ances_seq, position->li93_2);
 			
@@ -1266,9 +1266,9 @@ void tree_pairwise_distances(struct node *position)
 int assign_node_nums(struct node * position, int num)
 	{
 	
-	if(position->node1 != '\0')
+	if(position->node1 != NULL)
 		num = assign_node_nums(position->node1, num);
-	if(position->node2 != '\0')
+	if(position->node2 != NULL)
 		num = assign_node_nums(position->node2, num);
 		
 	position->nodenum = num;
@@ -1282,13 +1282,13 @@ int assign_node_nums(struct node * position, int num)
 void print_tree_pair_dist(struct node * position)
 	{
 	
-	if(position->node1 != '\0')
+	if(position->node1 != NULL)
 		print_tree_pair_dist(position->node1);
-	if(position->node2 != '\0')
+	if(position->node2 != NULL)
 		print_tree_pair_dist(position->node2);
 		
 		
-	if(position->seq_num1 !='\0')
+	if(position->seq_num1 !=NULL)
 		fprintf(yadf, "node%d to %s\t",  position->nodenum, (position->seq_num1)->name);
 	else
 		fprintf(yadf, "node%d to node%d\t", position->nodenum, (position->node1)->nodenum ); 
@@ -1296,7 +1296,7 @@ void print_tree_pair_dist(struct node * position)
 	
 	fprintf(yadf, "%f\t%f\t%f\t%f\t%f\n", position->li93_1[0], position->li93_1[1], (position->li93_1[0]/position->li93_1[1]), position->li93_1[2], position->li93_1[3]);
 	
-	if(position->seq_num2 !='\0')
+	if(position->seq_num2 !=NULL)
 		fprintf(yadf, "node%d to %s\t",  position->nodenum, (position->seq_num2)->name);
 	else
 		fprintf(yadf, "node%d to node%d\t", position->nodenum, (position->node2)->nodenum ); 
@@ -1331,10 +1331,10 @@ void subs_inclade(struct node * position, int *count, float **subs)
 	{
 	float replacements = 0, silents = 0;
 	
-	if(position->node1 != '\0' && position->seq_num1 == '\0') 
+	if(position->node1 != NULL && position->seq_num1 == NULL) 
 		subs_inclade(position->node1, count, subs);
 	
-	if(position->node2 != '\0' && position->seq_num2 == '\0')
+	if(position->node2 != NULL && position->seq_num2 == NULL)
 		subs_inclade(position->node2, count, subs);
 		
 	
@@ -1360,7 +1360,7 @@ void count_subs(struct node * position, float *replacements, float *silents)
 	
 	
 	
-	if(position->node1 != '\0' && position->seq_num1 == '\0') /* If node_1 points to a daughter node */
+	if(position->node1 != NULL && position->seq_num1 == NULL) /* If node_1 points to a daughter node */
 		count_subs(position->node1, replacements, silents);
 	else   /* count the sites in the first sequence */
 		{
@@ -1391,7 +1391,7 @@ void count_subs(struct node * position, float *replacements, float *silents)
 			
 			
 	
-	if(position->node2 != '\0') /* if node_2 points to a daughter node */
+	if(position->node2 != NULL) /* if node_2 points to a daughter node */
 		count_subs(position->node2, replacements, silents);
 	else /* count the sites in the second sequence */
 		{

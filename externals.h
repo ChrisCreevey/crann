@@ -45,7 +45,7 @@
 #endif
 
 
-extern const maxnamlen;
+extern const int maxnamlen;
 
 extern struct sequence{
 
@@ -103,7 +103,7 @@ extern struct node *tree_top;     /* pointer to the top of the tree */
 
 
 extern FILE *file, *outfile, *dist, *parenthesis, *ances_file, *outtree, *graphfile, *yadf;
-extern char filename[36], outfilename[36], nestname[36];
+extern char filename[36], outfilename[36], nestname[36], string1[1000], string2[1000];
 extern int code, num_of_seqs, untagged, distance_written, startw, endw, gen_opt[7], ***graphs; /* distance_written is used to tell if the distance.out file was already written */
 extern float **distances; /* used to store distances when computing a neighbour joining tree */
 
