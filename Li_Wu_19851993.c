@@ -275,14 +275,14 @@ void Li_Wu(void)
 	
 	clear_results();	
 	if(gen_opt[3] == 1){ startw = 0; endw = (start->length/3 -1); }	
-	while(seq1->next)
+	while(seq1->next != NULL)
 		{		
-		if(seq1->tag)
+		if(seq1->tag == TRUE)
 			{			
 	/* change1 		
 			new = (struct synon *)malloc(sizeof(li_wu_result));  */
 			new = malloc(sizeof(li_wu_result));
-				if(!new)
+				if(new == NULL)
 					{
 					printf("\n\t Out of memory\n");
 					clean_exit();
@@ -291,28 +291,28 @@ void Li_Wu(void)
 			new->seq_num = seq1->seq_num;
 			
 			new->Ks = malloc((num_of_seqs - seq1->seq_num)*(sizeof(int)));
-			if(!new->Ks)
+			if(new->Ks == NULL)
 				{
 				printf("\n\t Out of memory\n");
 				clean_exit();
 				}
 
 			new->varKs = malloc((num_of_seqs - seq1->seq_num)*(sizeof(int)));
-			if(!new->varKs)
+			if(new->varKs == NULL)
 				{
 				printf("\n\t Out of memory\n");
 				clean_exit();
 				}
 
 			new->Ka = malloc((num_of_seqs - seq1->seq_num)*(sizeof(int)));
-			if(!new->Ka)
+			if(new->Ka == NULL)
 				{
 				printf("\n\t Out of memory\n");
 				clean_exit();
 				}
 
 			new->varKa = malloc((num_of_seqs - seq1->seq_num)*(sizeof(int)));
-			if(!new->varKa)
+			if(new->varKa == NULL)
 				{
 				printf("\n\t Out of memory\n");
 				clean_exit();
@@ -342,7 +342,7 @@ void Li_Wu(void)
 			seq2 = seq1->next;
 			while(seq2 != NULL)
 				{
-				if(seq2->tag)
+				if(seq2->tag == TRUE)
 					{
 					
 					for(i=0; i<3; i++)
@@ -436,7 +436,7 @@ void which_sequences(void)
 				do {
 					position = start;
 					do{
-						if(position->tag) printf("\nNo: %d Name: %s ", ((position->seq_num)+1), (position->name));
+						if(position->tag == TRUE) printf("\nNo: %d Name: %s ", ((position->seq_num)+1), (position->name));
 						position = position->next;
 						}while(position != NULL);		
 					choice2 = getint("\n\nPlease select the number of a sequence to be omitted from the analysis, and enter 0 when finished\n", 0, num_of_seqs, 0);
@@ -477,7 +477,7 @@ void tag_all(void)
 	{
 	struct sequence *position = start;
 	
-	while(position)
+	while(position != NULL)
 		{
 		position->tag = TRUE;
 		position = position->next;
@@ -607,19 +607,19 @@ void Li_Wu_movwin(void)
 
 			
 	
-	while(seq1->next)
+	while(seq1->next  != NULL)
 		{
 		seq2 = seq1->next;		
-		if(seq1->tag)
+		if(seq1->tag == TRUE)
 			{		
 			while(seq2)
 				{
-				if(seq2->tag)
+				if(seq2->tag == TRUE)
 					{
 					/* change3
 					new = (struct synon *)malloc(sizeof(li_wu_result));  */
 					new = malloc(sizeof(li_wu_result));
-					if(!new)
+					if(new == NULL)
 						{
 						printf("\n\tOut of memory\n");
 						clean_exit();
@@ -627,28 +627,29 @@ void Li_Wu_movwin(void)
 					
 					new->seq_num = seq2->seq_num;
 					new->Ks = malloc(((start->length/3 -1)/shift)*sizeof(int));
-					if(!new->Ks)
+					printf("Ks length= %d\n", ((start->length/3 -1)/shift));
+					if(new->Ks == NULL)
 						{
 						printf("\n\t Out of memory\n");
 						clean_exit();
 						}
 
 					new->varKs = malloc(((start->length/3 -1)/shift)*sizeof(int));
-					if(!new->varKs)
+					if(new->varKs == NULL)
 						{		
 						printf("\n\t Out of memory\n");
 						clean_exit();
 						}
 
 					new->Ka = malloc(((start->length/3 -1)/shift)*sizeof(int));
-					if(!new->Ka)
+					if(new->Ka == NULL)
 						{
 						printf("\n\t Out of memory\n");
 						clean_exit();
 						}
 
 					new->varKa = malloc(((start->length/3 -1)/shift)*sizeof(int));
-					if(!new->varKa)
+					if(new->varKa == NULL)
 						{
 						printf("\n\t Out of memory\n");
 						clean_exit();
@@ -742,6 +743,7 @@ void display_movwin(int window, int shift)
 	start = 0;
 	while(li_wu_start->Ks[i] != -2)
 		{
+		printf("i=%d\n", i);
 		position = li_wu_start;
 		total = 0;
 		while(position != NULL)

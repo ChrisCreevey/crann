@@ -29,8 +29,8 @@
 //
 /*****************************************************************************/
 
-#define STD_CODON_NUM 300			/* standard length of the gene in codons */
-#define maxnamlen 60			/* maximum length of the gene name */
+#define STD_CODON_NUM 1000			/* standard length of the gene in codons */
+#define maxnamlen 1000			/* maximum length of the gene name */
 #define progname "Evolve 0.6 by Chris Creevey"
 
 #ifndef TRUE
@@ -54,7 +54,7 @@ struct sequence{
 	char name[maxnamlen + 1 ];	/* the name of the sequence */
 	char nickname[20];			/* the shortened name of the sequence */
 	int seq_num;				/* the number of the sequence in the file */
-	int tag;					/* A tag for the seguence */
+	int tag;					/* A tag for the sequence */
 	int outgroup;				/* This tells whether the sequence is part of the outgroup or not */
 	int length;					/* the length of the sequence */
 	int numofstpcodons;			/* A number representing how many stop codons were in the sequence */
@@ -66,8 +66,8 @@ struct sequence{
 	} list_entry;
 
 
-struct sequence *start;  /*pointer to first sequence in the list */
-struct sequence *last; /*point to last sequece in the list */
+struct sequence *start = NULL;  /*pointer to first sequence in the list */
+struct sequence *last = NULL; /*point to last sequece in the list */
 
 
 struct synon{
@@ -82,8 +82,8 @@ struct synon{
 	
 	} li_wu_result; 
 	
-struct synon *li_wu_start; /* Pointer to the first set of results */
-struct synon *li_wu_end;  /* pointer to the last set of results */
+struct synon *li_wu_start = NULL; /* Pointer to the first set of results */
+struct synon *li_wu_end = NULL;  /* pointer to the last set of results */
 
 
 struct node{
@@ -102,11 +102,11 @@ struct node{
 	int nodenum;
 	} node_type;
 	
-struct node *tree_top;     /* pointer to the top of the tree */
+struct node *tree_top = NULL;     /* pointer to the top of the tree */
 
 
 FILE *file = NULL, *outfile = NULL, *dist = NULL, *parenthesis = NULL, *ances_file = NULL, *outtree = NULL, *usagefile = NULL, *graphfile = NULL, *yadf = NULL;
-char filename[36], outfilename[36], nestname[36], string1[1000], string2[1000];
+char filename[1000], outfilename[1000], nestname[1000], string1[1000], string2[1000];
 int code = 0, num_of_seqs = 0, untagged = 0, distance_written = FALSE, startw = 0, endw = 0, gen_opt[7] = {0, 0, 1, 1, 0, 0, 0}, ***graphs = NULL; /* distance_written is used to tell if the distance.out file was already written */
 float **distances = NULL; /* used to store distances when computing a neighbour joining tree */
 

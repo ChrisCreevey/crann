@@ -54,6 +54,7 @@
 #include "linked tree.h"
 #include "Li_Wu_19851993.h"
 
+
 int main(void)
 	{
 		
@@ -73,7 +74,7 @@ int main(void)
 
 	printf("\n\nFinished!!!!\n\n");	
 	clean_exit();
-	return(1);
+	return(0);
 	}
 
 
@@ -89,13 +90,13 @@ int main(void)
 void main_menu(void)
 	{
 	int exit = FALSE, done = FALSE;
-	int choice;
+	int choice =0;
 	do
 		{
-		choice = '\0';
+		choice = 0;
 		printf("\n\t\t***************************************************");
 		printf("\n\t\t* Main menu                                       *");
-		printf("\n\t\t*                 Crann  1.1                      *");
+		printf("\n\t\t*                 Crann  1.2                      *");
         printf("\n\t\t*                                                 *");
 		printf("\n\t\t*                 Copyright (c) 2016 Chris Creevey*");
 		printf("\n\t\t***************************************************\n\n");
@@ -124,7 +125,7 @@ void main_menu(void)
 			choice = getint("\n\tPlease select an action (default = 9) ", 1, 9, 9);
 		
 		
-		switch(toupper(choice))
+		switch(choice)
 			{			
 			case 1:
 				open_input_file();
@@ -175,10 +176,10 @@ void main_menu(void)
 				exit = TRUE;
 				break;
 			default:
-				choice = '\0';
+				choice = 0;
 			}
 				
-		}while(!exit|| choice == '\0');
+		}while(!exit|| choice == 0);
 	}
 
 				
@@ -403,8 +404,8 @@ void Splash(void)
 	char ans[80];
 	printf("\n\n");
 	printf("/**********************************************************************/\n");
-	printf("/*                             Crann 1.1                              */\n");
-	printf("/*                        (pronounced 'crown')                        */\n");
+	printf("/*                             Crann 1.2                              */\n");
+	printf("/*                                                                    */\n");
 	printf("/*                    Written by: Chris Creevey                       */\n");
 	printf("/*      Initial release April 2003; Current release October 2016      */\n");
 	printf("/*         Address:                                                   */\n");
@@ -479,7 +480,7 @@ void open_input_file(void)
 		do{
 			fastaformat = TRUE;
 			printf("\n\n\tName of the fasta formatted file ");
-			scanf("%s%c", string1, string2);
+			scanf("%s%c", string1, &overflow);
 			filename[0] = '\0'; strcpy(filename, string1); 
 			if((file = fopen(filename, "r")) == NULL)		/* check to see if the file is there */
 				{
@@ -532,7 +533,7 @@ void open_output_file(void)
 	
   	do{		
 		printf("\n\n\tName of the output file: ");
-		scanf("%s%c", string1, string2);
+		scanf("%s%c", string1, &overflow);
 		outfilename[0] = '\0'; strcpy(outfilename, string1); 
 		if((outfile = fopen(outfilename, "w")) == NULL)		/* check to see if the file can be opened/created */
 			{
@@ -647,20 +648,21 @@ int choose_code(void)
 					
 
 
-int read_file (int fastaformat)
+int read_file(int fastaformat)
 	{
 	
 	struct sequence *new = NULL;
 	int j;
 	char c;
-	
-	if((c = getc(file)) == '>')
+	while(!feof(file) && ((c= getc(file)) == ' ' || c == '\t' || c == '\n')); /* skip past invisible characters */
+
+	if(c == '>')
 		{
 		fastaformat = TRUE;
 		j = 0;
 		do{
 				new = malloc(sizeof(list_entry));
-				if(!new)
+				if(new == NULL)
 					{
 					printf("\n\t Out of memory\n");
 					clean_exit();
@@ -675,7 +677,7 @@ int read_file (int fastaformat)
 	else
 		{
 		/* if the first character in the file is not a '>' then  we assume the format is wrong */
- 		printf("\n\n\tThis does not seem   to be a fasta formatted file\n\n");
+ 		printf("\n\n\tThis does not seem to be a fasta formatted file\n\n");
 		fastaformat = FALSE;
 		}
 	num_of_seqs = j;	
@@ -718,7 +720,7 @@ char read_sequence(int seq_num, struct sequence *new)
 		if(j < maxnamlen) j++;
 		
 
-		}while((c = getc(file)) != '\n' && c != '\r' && feof(file) == 0);
+		}while(feof(file) == 0 && (c = getc(file)) != '\n' && c != '\r');
 	new->name[j] = '\0';				/* append a '\0' terminator */
 
 	/* create the nickname */
@@ -763,7 +765,7 @@ char read_sequence(int seq_num, struct sequence *new)
 			{
 			memory_allocations++;
 			new->bases = realloc(new->bases, ((STD_CODON_NUM * (sizeof(int))) * memory_allocations));    /* reallocate the memory space to the size required to fit the STD_CODON_NUM * new memory allocations */
-			if(!new->bases)
+			if(new->bases == NULL)
 				{
 				printf("\n\t Out of memory\n");
 				clean_exit();
@@ -792,14 +794,14 @@ char read_sequence(int seq_num, struct sequence *new)
 	/* initialise the stopcodon array */
 	
 	new->stopcodons = (malloc(1 * (sizeof (int))));
-	if(!new->stopcodons)
+	if(new->stopcodons == NULL)
 			{
 			printf("\n\t Out of memory\n");
 			clean_exit();
 			}
 
 	/* now assign the pointers to the previous and next sequence */
-	if (!last || !start) 	/* If this is a new list */
+	if (last == NULL || start == NULL) 	/* If this is a new list */
 		{
 		last = new;
 		start = new;
@@ -820,9 +822,9 @@ char getletter(char *instr)
 	char outchar = '\0', overflow = '\0';
 	printf("%s: ", instr);
 	
-/*		outchar = getch(); */ /* Use for Mac version */
+		outchar = getc(stdin);  /* Use for Mac version */
 	
-	scanf("%1c%c", &outchar, &overflow);  /* Use for PC version */
+/*	scanf("%1c%c", &outchar, &overflow); */ /* Use for PC version */
 	return(outchar);
 	}
 
@@ -840,9 +842,9 @@ void clear_memory(void)
 	struct sequence *new = NULL;
 	struct synon *place = NULL;
 
-	if(start)
+	if(start != NULL)
 		{
-		while(start) 
+		while(start != NULL) 
 			{
 			 new = start->next;
 			 free(start->bases);
@@ -852,9 +854,9 @@ void clear_memory(void)
 		start = NULL;
 		last = NULL;
 		}
-	if(li_wu_start)
+	if(li_wu_start != NULL)
 		{
-		while(li_wu_start)
+		while(li_wu_start != NULL)
 			{
 			place = li_wu_start->next;
 			free(li_wu_start->Ks);
@@ -873,7 +875,7 @@ void clear_memory(void)
 		deletion = NULL;
 		}
 	num_of_seqs = 0;
-	if(outgroup) 
+	if(outgroup != NULL) 
 		{
 		free(outgroup);
 		outgroup = NULL;
@@ -898,9 +900,9 @@ void clear_results(void)
 	{
 
 	struct synon *place = NULL;
-	if(li_wu_start)
+	if(li_wu_start != NULL)
 		{
-		while(li_wu_start)
+		while(li_wu_start != NULL)
 			{
 			place = li_wu_start->next;
 			free(li_wu_start->Ks);
@@ -1066,7 +1068,6 @@ void clean_exit(void)
 	exit(1);
 	}
 
-
 int getint(char *instr,int minx,int maxx, int def)
 {
         int ret, status;
@@ -1143,7 +1144,7 @@ void checkdata(void)
 
 		/* check length of sequences */
 
-	while(position && !exit)
+	while(position != NULL && !exit)
 		{
 		if(position->length != length)
 			{
@@ -1161,7 +1162,7 @@ void checkdata(void)
 		
 	position = start;
 
-	while(position && !exit)
+	while(position != NULL && !exit)
 		{
 		i = 0;
 		while(position->bases[i] != 193 && !exit)
@@ -1188,7 +1189,7 @@ void checkdata(void)
         position = start;
         while(position != NULL)
             {
-            free(position->stopcodons);
+            if(position->stopcodons != NULL) free(position->stopcodons);
             position->numofstpcodons = 0;
             position->stopcodons = malloc(1*sizeof(int));
             position = position->next;
@@ -1311,7 +1312,7 @@ void summary(void)
 	printf("\t Number of sequences in memory = %d\n", num_of_seqs);
 	printf("\t genetic code = %s ", name_code(code));
 
-	if(!start)
+	if(stop)
 		{
 		printf("\n\n\t data input was halted due to a data format error:  \n");
 		printf("\t The sequences were all not the same length         \n");
@@ -1345,9 +1346,9 @@ void summary(void)
 			}
 		else printf("\n\n\t Number of Non-standard characters = 0\n");
 		position = start;
-		if(position) 
+		if(position != NULL) 
 			{
-			while(position)
+			while(position != NULL)
 				{
 				if(position->numofstpcodons != 0)
 					{

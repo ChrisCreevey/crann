@@ -1314,7 +1314,7 @@ void allocate_distances(int k)
 	
 	
 	distances = malloc((num_of_seqs-untagged)*sizeof(float*));
-	if(!distances)
+	if(distances == NULL)
 		{
 		printf("\nError: Out of memory\n");
 		clean_exit();
@@ -1322,7 +1322,7 @@ void allocate_distances(int k)
 	for(i=0; i<num_of_seqs-untagged; i++)
 		{
 		distances[i] = malloc((num_of_seqs-untagged)*sizeof(float));
-		if(!distances[i])
+		if(distances[i] == NULL)
 			{
 			printf("\nError: Out of memory\n");
 			clean_exit();
@@ -1439,26 +1439,27 @@ void allocate_distances(int k)
 				}	
 
 			place = start;
-			for(i=0; i<num_of_seqs-untagged; i++)
-				{
-				fprintf(dist, "%-10.10s", place->name);
-				for(j=0; j<num_of_seqs-untagged; j++)
+	
+				for(i=0; i<num_of_seqs-untagged; i++)
 					{
-					if(distances[i][j] >= 0 && distances[i][j] < 100)
-						fprintf(dist, " %f", distances[i][j]);
-					else 
+					fprintf(dist, "%-10.10s", place->name);
+					for(j=0; j<num_of_seqs-untagged; j++)
 						{
-						if(distances[i][j] < 0) 
-							{
-							distances[i][j] = 0;
+						if(distances[i][j] >= 0 && distances[i][j] < 100)
 							fprintf(dist, " %f", distances[i][j]);
+						else 
+							{
+							if(distances[i][j] < 0) 
+								{
+								distances[i][j] = 0;
+								fprintf(dist, " %f", distances[i][j]);
+								}
+							else
+								fprintf(dist, " NaN  ");
 							}
-						else
-							fprintf(dist, " NaN  ");
 						}
-					}
- 				fprintf(dist, "\n");
-				place = place->next;
+	 				fprintf(dist, "\n");
+					place = place->next;
 				}
 			fclose(dist);
 			dist = NULL;
@@ -1513,7 +1514,7 @@ void McDonald_Kreitman(void)
 			
 	/* assign standard_tree */
 	standard_tree   = malloc((num_of_seqs-untagged)*sizeof(float*));
-	if(!standard_tree)
+	if(standard_tree == NULL)
 		{
 		printf("ERROR: Out of memory\n");
 		clean_exit();
@@ -1522,7 +1523,7 @@ void McDonald_Kreitman(void)
 	for(i=0; i<num_of_seqs-untagged; i++)
 		{	
 		standard_tree[i]  = malloc((num_of_seqs-untagged)*sizeof(float));
-		if(!standard_tree[i])
+		if(standard_tree[i] == NULL)
 			{
 			printf("ERROR: Out of memory\n");
 			clean_exit();
@@ -1535,7 +1536,7 @@ void McDonald_Kreitman(void)
 
 	/* assign graphs */
 	graphs = malloc(((num_of_seqs - untagged)*sizeof(int **)));
-	if(!graphs)
+	if(graphs == NULL)
 		{
 		printf("ERROR: Out of memory\n");
 		clean_exit();
@@ -1543,7 +1544,7 @@ void McDonald_Kreitman(void)
 	for(i=0; i<num_of_seqs - untagged; i++)
 		{
 		graphs[i] = malloc(4*sizeof(int *));
-		if(!graphs[i])
+		if(graphs[i] == NULL)
 			{
 			printf("ERROR: Out of memory\n");
 			clean_exit();
@@ -1551,7 +1552,7 @@ void McDonald_Kreitman(void)
 		for(j=0; j<4; j++)
 			{
 			graphs[i][j] = malloc((start->length/3)*sizeof(int));
-			if(!graphs[i][j])
+			if(graphs[i][j] == NULL)
 				{
 				printf("ERROR: Out of memory\n");
 				clean_exit();
@@ -1567,13 +1568,13 @@ void McDonald_Kreitman(void)
 		
 	/* assign ratio;  the array is divided up as follows: */
 	ratio = malloc(((num_of_seqs - untagged )*sizeof(int *)));
-	if(!ratio)
+	if(ratio == NULL)
 		{
 		printf("ERROR: Out of memory\n");
 		clean_exit();
 		}
 	ratio2 = malloc(((num_of_seqs - untagged )*sizeof(float *)));
-	if(!ratio2)
+	if(ratio2 == NULL)
 		{
 		printf("ERROR: Out of memory\n");
 		clean_exit();
@@ -1581,7 +1582,7 @@ void McDonald_Kreitman(void)
 	tmp_ratio = malloc(((num_of_seqs - untagged )*sizeof(float *))); /* the input for the g-test needed to be changed to a float, so instead of changing every mention of ratio
 																		to refer to a float, this array will be assigned to the values that are in ratio, and will be passed in its
 																		stead. This leaves the original as it is, and meets the requirements for the function G_test */ 
-	if(!tmp_ratio)
+	if(tmp_ratio == NULL)
 		{
 		printf("ERROR: Out of memory\n");
 		clean_exit();
@@ -1589,19 +1590,19 @@ void McDonald_Kreitman(void)
 	for(i=0; i<(num_of_seqs - untagged ); i++)
 		{
 		ratio[i] = malloc(4*sizeof(int));
-		if(!ratio[i])
+		if(ratio[i] == NULL)
 			{
 			printf("ERROR: Out of memory\n");
 			clean_exit();
 			}
 		ratio2[i] = malloc(4*sizeof(float));
-		if(!ratio2[i])
+		if(ratio2[i] == NULL)
 			{
 			printf("ERROR: Out of memory\n");
 			clean_exit();
 			}
 		tmp_ratio[i] = malloc(4*sizeof(float));
-		if(!tmp_ratio[i])
+		if(tmp_ratio[i] == NULL)
 			{
 			printf("ERROR: Out of memory\n");
 			clean_exit();
@@ -1619,7 +1620,7 @@ void McDonald_Kreitman(void)
 		remembered so that if can be printed out for simulation testing (we can then look over 1000 runs of neutral data, the distribution of chi)
 		*/
 	gChi = malloc(((num_of_seqs - untagged )*sizeof(float)));
-	if(!gChi)
+	if(gChi == NULL)
 		{
 		printf("ERROR: Out of memory\n");
 		clean_exit();
@@ -1630,7 +1631,7 @@ void McDonald_Kreitman(void)
 		}
 		
 	gChi2 = malloc(((num_of_seqs - untagged )*sizeof(float)));
-	if(!gChi2)
+	if(gChi2 == NULL)
 		{
 		printf("ERROR: Out of memory\n");
 		clean_exit();
@@ -1644,13 +1645,13 @@ void McDonald_Kreitman(void)
 	/* assign pvalue */
 	
 	pvalue = malloc(((num_of_seqs - untagged )*sizeof(float *)));
-	if(!pvalue)
+	if(pvalue == NULL)
 		{
 		printf("ERROR: Out of memory\n");
 		clean_exit();
 		}
 	pvalue2 = malloc(((num_of_seqs - untagged )*sizeof(float *)));
-	if(!pvalue2)
+	if(pvalue2 == NULL)
 		{
 		printf("ERROR: Out of memory\n");
 		clean_exit();
@@ -1659,13 +1660,13 @@ void McDonald_Kreitman(void)
 	for(i=0; i<(num_of_seqs - untagged ); i++)
 		{
 		pvalue[i] = malloc((3*sizeof(float)));
-		if(!pvalue[i])
+		if(pvalue[i] == NULL)
 			{
 			printf("ERROR: Out of memory\n");
 			clean_exit();
 			}
 		pvalue2[i] = malloc((3*sizeof(float)));
-		if(!pvalue2[i])
+		if(pvalue2[i] == NULL)
 			{
 			printf("ERROR: Out of memory\n");
 			clean_exit();
@@ -1681,7 +1682,7 @@ void McDonald_Kreitman(void)
 	
 	/* Assign subs array (to be used in the function subs_inclade) */
 	subs = malloc(((num_of_seqs - untagged)*sizeof(float *)));
-	if(!subs)
+	if(subs == NULL)
 		{
 		printf("ERROR: out of memory\n");
 		clean_exit();
@@ -1690,7 +1691,7 @@ void McDonald_Kreitman(void)
 	for(i=0; i<(num_of_seqs - untagged); i++)
 		{
 		subs[i] = malloc((2*sizeof(float)));
-		if(!subs[i])
+		if(subs[i] == NULL)
 			{
 			printf("ERROR: out of memory\n");
 			clean_exit();
@@ -2920,7 +2921,7 @@ void output_tree(float **tree)
 
 	/***declaration and initialisation **/	
 	build = malloc((num_of_seqs - untagged - 2)*(sizeof(char*)));
-	if(!build)
+	if(build == NULL)
 			{
 			printf("\n\t Out of memory\n");
 			clean_exit();
@@ -2928,7 +2929,7 @@ void output_tree(float **tree)
 	for(i=0; i<(num_of_seqs - untagged - 2); i++)
 		{
 		 build[i] = malloc((100 * num_of_seqs)*(sizeof(char)));
-		if(!build[i])
+		if(build[i] == NULL)
 			{
 			printf("\n\t Out of memory\n");
 			clean_exit();
@@ -2940,7 +2941,7 @@ void output_tree(float **tree)
 	
 	
 	joined = malloc((num_of_seqs - untagged)*(sizeof(int*)));
-	if(!joined)
+	if(joined == NULL)
 			{
 			printf("\n\t Out of memory\n");
 			clean_exit();
@@ -2948,7 +2949,7 @@ void output_tree(float **tree)
 	for(i=0; i<num_of_seqs - untagged; i++)
 		{
 		joined[i] = malloc((2)*(sizeof(int)));
-		if(!joined[i])
+		if(joined[i] == NULL)
 			{
 			printf("\n\t Out of memory\n");
 			clean_exit();
@@ -2962,7 +2963,7 @@ void output_tree(float **tree)
 		}
 	
 	temp = malloc((100 * num_of_seqs)*(sizeof(char)));  /* used to manipualte strings */
-	if(!temp)
+	if(temp == NULL)
 			{
 			printf("\n\t Out of memory\n");
 			clean_exit();
