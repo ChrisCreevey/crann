@@ -116,9 +116,9 @@ void main_menu(void)
 		if(outfile == NULL) printf("None>\n");
 		else printf("%s>\n", outfilename);	
 		printf("\t3 = Output sequences from memory   < Sequences in memory = %d>\n", num_of_seqs);
-		printf("\t4 = Perform Creevey, McInerney method\n");
-		printf("\t5 = Calculate pairwise distances over the full length of the sequence\n");
-		printf("\t6 = Calculate pairwise distances as a moving window analysis\n");
+		printf("\t4 = Perform Phylogenetic Relative Rate Ratio Test (Creevey & McInerney 2002)\n");
+		printf("\t5 = Calculate all dN/dS pairwise distances\n");
+		printf("\t6 = Calculate all dN/dS pairwise distances as a moving window along alignment\n");
 		printf("\t7 = Options\n");
 		printf("\t8 = About Crann\n");
 		printf("\t9 = Quit program\n");
