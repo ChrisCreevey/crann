@@ -41,7 +41,7 @@
 
 void linked_tree(float **tree_array)
 	{
-	int *done_col, row = 0, col = 0, taxa = 0, one = 0, i = 0, seq = 0, j =0, x= 0, y = 0, joining = FALSE;
+	int *done_col, row = 0, col = 0, taxa = 0, one = 0, i = 0, seq = 0, j =0, joining = FALSE;
 	
 	struct node **build = NULL, *position = NULL;
 	
@@ -668,7 +668,7 @@ void reroot_tree(struct node *position)
 int prune_tree(struct node *position)
 	{
 	struct node *place = NULL;
-	int i = 0, done = FALSE;
+	int done = FALSE;
 	
 	if(position->seq_num1 == NULL && position->seq_num2 == NULL)
 		{
@@ -761,7 +761,7 @@ int prune_tree(struct node *position)
 int check_outgroup(int count)
 	{
 	struct node *position = NULL;
-	int answer = FALSE, number = 0, proceed = TRUE;
+	int answer = FALSE, proceed = TRUE;
 		
 	/* because of the nature of the storage of the tree, if the tree is originally rooted in the middle
 	   of the outgroups, it will not be possible to verify the selection of the outgroups. The best way to
@@ -864,7 +864,7 @@ struct node * find_non_outgroup(struct node *position)
 
 void dismantle(struct node *position, int *count)
 	{
-	int i=0;
+	
 	struct node *place = NULL;
 	
 	if(position->node1 != NULL) dismantle(position->node1, count);
@@ -1055,7 +1055,7 @@ int check_treefile(void)
 int input_tree(char *c, struct node *previous, int num)
 	{
 	char temp[13] = {'\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','\0','\0'};
-	int i = 0, j = 0, end = FALSE, error = FALSE, count = 0, score = 0, highest = 0;
+	int i = 0, end = FALSE, error = FALSE, count = 0, score = 0, highest = 0;
 	struct sequence *seq = start, *same = NULL;
 	struct node *extra = NULL, *position  = NULL;
 

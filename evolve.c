@@ -31,6 +31,7 @@
 
 
 
+
 /***************************************************************************************************************/																												
 /* This program reads in a fasta formatted file which contains multiple sequences along with names etc....     */
 /* The sequences are read into a linked list of structures which record the name, length, number and tag of    */
@@ -57,7 +58,7 @@
 
 int main(void)
 	{
-		
+
 	start = NULL;
 	last = NULL;  /* initialise top and bottom pointers of the sequence in memory */
 	li_wu_start = NULL;
@@ -65,6 +66,12 @@ int main(void)
 
 	printf("\n\n\n\n\n\n\n\n");
 	main_menu();
+/*
+	open_input_file();
+
+	open_output_file();
+	McDonald_Kreitman();
+*/
 	if(file != NULL) fclose(file);
 	if(outfile != NULL) fclose(outfile);
 	if(dist != NULL) fclose(dist);
@@ -91,6 +98,7 @@ void main_menu(void)
 	{
 	int exit = FALSE, done = FALSE;
 	int choice =0;
+
 	do
 		{
 		choice = 0;
@@ -143,14 +151,18 @@ void main_menu(void)
 			case 4:
 				if(check_files())
 					{
-					Li_Wu(); 
-					if(check_distances() == TRUE)
+					printf("starting :Li_Wu\n");
+				/*	Li_Wu(); */
+					printf("Finished :Li_Wu\n");
+				/*	if(check_distances() == TRUE)
 						{
 						printf("\nSome sequences were too distantly related from each other to accuratley\ncalculate the Li distances.");
 						printf(" In these cases the Li value was set to\ntwice the largest calculated value in the matrix\n");
-						}
+						} */
+
+					printf("starting :McD\n");
 					McDonald_Kreitman(); 
-						
+					printf("Finished :McD\n");
 					done = TRUE;
 					}
 				break;
@@ -158,7 +170,9 @@ void main_menu(void)
 				if(check_files())
 					{
 					Li_Wu();
+					printf("Finished :Li_Wu\n");
 					allocate_distances(2);
+					printf("Finished :allocate_distances\n");
 					done = TRUE;
 					}				
 				break;
@@ -325,11 +339,11 @@ void general_options(void)
 				break;
 					
 			default:
-				ans = '\0';
+				ans = -1;
 				break;
 				
 			}
-		}while(ans != '\0');
+		}while(ans != -1);
 	printf("\n\n\n\n\n\n\n\n");
 	}
 
@@ -462,25 +476,23 @@ void open_input_file(void)
 
 	{
 	char choice;
- 	int fastaformat, exit = FALSE, i =0; 
-	char overflow = 'a';
-	struct sequence *position = start;
-
+ 	int fastaformat, exit = FALSE, i =0;
 
 	if(file != NULL)
 		 {
 		 fclose(file);      /* If there has been an input file opened already, close it before opening the new one */
 		 file = NULL;
 		 }
-	clear_memory();
+	clear_memory(); 
 	
 	for(i=0; i<100; i++) nonstandchars[i] = '\0'; /* initialise nonstandchars array before reading new file */
 	
 	do{
 		do{
 			fastaformat = TRUE;
-			printf("\n\n\tName of the fasta formatted file ");
-			scanf("%s%c", string1, &overflow);
+			/*printf("\n\n\tName of the fasta formatted file "); */
+			getstr("\n\n\tName of the fasta formatted file", string1);
+			/*scanf("%s%c", string1, &overflow); */
 			filename[0] = '\0'; strcpy(filename, string1); 
 			if((file = fopen(filename, "r")) == NULL)		/* check to see if the file is there */
 				{
@@ -506,7 +518,7 @@ void open_input_file(void)
 
   	if(!exit) 
   		{
-  		checkdata();
+  		checkdata(); 
 /*	 	codon_usage(); 
 	 	AAmakeup();
 	count_bases();		
@@ -522,7 +534,7 @@ void open_input_file(void)
 void open_output_file(void)
 	{
   	
-  	char choice, overflow = 'a';
+  	char choice;
   	int exit = FALSE;
   	
   	if(outfile != NULL)
@@ -532,8 +544,9 @@ void open_output_file(void)
 		}
 	
   	do{		
-		printf("\n\n\tName of the output file: ");
-		scanf("%s%c", string1, &overflow);
+		/*printf("\n\n\tName of the output file: ");
+		scanf("%s", string1); */
+		getstr("\n\n\tName of the output file", string1 );
 		outfilename[0] = '\0'; strcpy(outfilename, string1); 
 		if((outfile = fopen(outfilename, "w")) == NULL)		/* check to see if the file can be opened/created */
 			{
@@ -619,8 +632,7 @@ void show_tab_dna(void)
 
 int choose_code(void)
 	{
-	int i = '\0';
-	char choice = '\0';
+	int i;
 
 			printf("\n\n\n\n\n\n\n\n\n\n\n\n");
 			printf("\n\nPlease specify which genetic code the input file contains:\n\n");
@@ -652,7 +664,7 @@ int read_file(int fastaformat)
 	{
 	
 	struct sequence *new = NULL;
-	int j;
+	int i=0, j=0;
 	char c;
 	while(!feof(file) && ((c= getc(file)) == ' ' || c == '\t' || c == '\n')); /* skip past invisible characters */
 
@@ -661,17 +673,18 @@ int read_file(int fastaformat)
 		fastaformat = TRUE;
 		j = 0;
 		do{
-				new = malloc(sizeof(list_entry));
-				if(new == NULL)
-					{
-					printf("\n\t Out of memory\n");
-					clean_exit();
-					}
+			new = malloc(sizeof(list_entry));
+			if(new == NULL)
+				{
+				printf("\n\t Out of memory\n");
+				clean_exit();
+				}
 			
 			c = read_sequence(j, new);
 			j++;
-			
-			}while((c == '>') && (feof(file) != 1));
+			new=NULL;
+
+			}while(!feof(file) && (c == '>'));
 		}
 			
 	else
@@ -681,6 +694,18 @@ int read_file(int fastaformat)
 		fastaformat = FALSE;
 		}
 	num_of_seqs = j;	
+
+	/* link the sequences created to a new array */
+	allseqslist=malloc(num_of_seqs*sizeof(struct sequence *));
+	for(i=0; i<num_of_seqs; i++) allseqslist[i] = NULL;
+
+	new=start;
+	while(new != NULL) {
+		allseqslist[new->seq_num] = new;
+		new=new->next;
+		}
+
+
 	return(fastaformat);
 	
 	}
@@ -696,16 +721,13 @@ char read_sequence(int seq_num, struct sequence *new)
 	
 	char c = '\0';
 	int i = 0, j = 0, place = 0, value = 0, memory_allocations = 0;
-	
 
 
 	/* assign the sequence number */
 	new->seq_num = seq_num;
 	
-
 	/* initialise the tag (equal to TRUE) */
 	new->tag = TRUE;
-	
 	
 	/* All sequences are assumed to not be in the outgroup in the begining */
 	new->outgroup = FALSE;
@@ -713,14 +735,14 @@ char read_sequence(int seq_num, struct sequence *new)
 	/* read in the name of the sequence */
 	j = 0;
 	c = getc(file);
-	while(c == ' ') c = getc(file);
+	while(c == ' ' && !feof(file)) c = getc(file);
 	do{				
 	 
 	 	new->name[j] = c;
-		if(j < maxnamlen) j++;
+		if(j < maxnamlen-1) j++;
 		
 
-		}while(feof(file) == 0 && (c = getc(file)) != '\n' && c != '\r');
+		}while(!feof(file) && (c = getc(file)) != '\n' && c != '\r');
 	new->name[j] = '\0';				/* append a '\0' terminator */
 
 	/* create the nickname */
@@ -733,7 +755,7 @@ char read_sequence(int seq_num, struct sequence *new)
 		else
 			{
 			new->nickname[i] = '\0';
-			i=20;
+			i=19;
 			}
 		}
 	new->nickname[i] = '\0';
@@ -750,14 +772,14 @@ char read_sequence(int seq_num, struct sequence *new)
 		place = 0;
 		value = 0;
 		do{			
-			if(c != '\n' && c != '\r' && feof(file) == 0 && c != ' ')  /* if not an end of line or end of file */
+			if(c != '\n' && c != '\r' && !feof(file) && c != ' ')  /* if not an end of line or end of file */
 				{
 				value = value + transform_base(c, place);      /* call transform_base to calculate the codon number */
 				place++;
 				j++;			
 				}
 				
-		}while(((c= getc(file)) != '>') && (place < 3) && (feof(file) == 0));
+		}while(!feof(file) && ((c= getc(file)) != '>') && (place < 3));
 
 		if(value > 64) value = 64;     /* if there is a gap, then  the codon value is assigned to 64 */
 
@@ -777,7 +799,7 @@ char read_sequence(int seq_num, struct sequence *new)
 			i++;
 			}	
 		
-	}while((c != '>') && (feof(file) == 0));	
+	}while((c != '>') && !feof(file));	
 	new->bases[i] = 193;	/* 193 is the terminator value for the sequence */
 	
 
@@ -805,12 +827,17 @@ char read_sequence(int seq_num, struct sequence *new)
 		{
 		last = new;
 		start = new;
+		new->next = NULL;
+		new->previous = NULL;
 		}		
-	else (last)->next = new;
-	new->next = NULL;
-	new->previous = last;
-	last = new;
-
+	else 
+		{
+		last->next = new;
+		new->next = NULL;
+		new->previous = last;
+		last = new;
+		}
+	
 	return(c);
 
 
@@ -819,7 +846,7 @@ char read_sequence(int seq_num, struct sequence *new)
 
 char getletter(char *instr)
 	{
-	char outchar = '\0', overflow = '\0';
+	char outchar = '\0';
 	printf("%s: ", instr);
 	
 		outchar = getc(stdin);  /* Use for Mac version */
@@ -1128,7 +1155,7 @@ char *xgets(char *s)
 
 void checkdata(void)
 	{
-	int i = 0, question1 = FALSE, question2 = FALSE, length = 0, exit = FALSE;
+	int i = 0, question1 = FALSE, length = 0, exit = FALSE;
 	struct sequence *position = start;
 	
 	
@@ -1241,7 +1268,7 @@ int found(void)
 				complete = TRUE;
 				break;
 			default:
-				choice = '\0';
+				choice = FALSE;
 				break;
 			}
 		

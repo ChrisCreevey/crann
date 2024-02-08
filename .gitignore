@@ -6,3 +6,4 @@ crann
 *.plist
 *.db
 Thumbs.db
+*.yml

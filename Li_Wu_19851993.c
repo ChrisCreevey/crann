@@ -266,8 +266,7 @@ void Li_Wu(void)
 	float L[3] = {0,0,0}, P[3] = {0,0,0}, Q[3] = {0,0,0}, A[3] = {0,0,0}, B[3] = {0,0,0}, a[3] = {0,0,0}, b[3] = {0,0,0},
 	c[3] = {0,0,0}, varA[3] = {0,0,0}, varB[3] = {0,0,0}, K[3] = {0,0,0}, Ks = 0, Ka = 0, varKs = 0, varKa = 0; 
 
-	int i = 0, j = 0;
-	char choice = '\0';
+	int i = 0;
 	
 	struct sequence *seq1 = start;
 	struct sequence *seq2 = start->next;
@@ -333,12 +332,15 @@ void Li_Wu(void)
 				{
 				li_wu_end = new;
 				li_wu_start = new;
+				new->next = NULL;
+				new->previous = NULL;
 				}		
-			else (li_wu_end)->next = new;
-			new->next = NULL;
-			new->previous = li_wu_end;
-			li_wu_end = new;			
-			
+			else {
+				(li_wu_end)->next = new;
+				new->next = NULL;
+				new->previous = li_wu_end;
+				li_wu_end = new;			
+				}
 			seq2 = seq1->next;
 			while(seq2 != NULL)
 				{
@@ -418,7 +420,7 @@ void li_wu_complete(int *seq1, int *seq2, float *results)
 void which_sequences(void)
 	{
 	int choice1 = 0;
-	int choice2 = '\0';
+	int choice2 = -1;
 	struct sequence *position = start;
 	
 	tag_all();
@@ -440,13 +442,12 @@ void which_sequences(void)
 						position = position->next;
 						}while(position != NULL);		
 					choice2 = getint("\n\nPlease select the number of a sequence to be omitted from the analysis, and enter 0 when finished\n", 0, num_of_seqs, 0);
-					if(choice2 == 0) choice2 = '\0';
-					else
-						{
+					if(choice2 > 0)
+						{						
 						omit_sequence((choice2 - 1));
 						untagged++;
 						}
-					}while(choice2 != '\0');
+					}while(choice2 != 0);
 				break;
 
 			}
@@ -494,10 +495,10 @@ void window_size(int *startw, int *endw)
 	
 	printf("\n\n\tPlease select the desired start postition for analysis of the sequences (in codons)");
 	*startw = getint("\n\t(Press return for the begining of the sequences)", 0, ((start->length)/3) -1, 0);
-	printf("\n choice = %d", *startw);
+	/*printf("\n choice = %d", *startw); */
 	printf("\n\n\tPlease select the desired end postition for analysis of the sequences (in codons)");
 	*endw = getint("\n\t(Press return for the end of the sequences)", 0, ((start->length)/3) -1, ((start->length)/3 - 1));
-	printf("\n choice = %d", *endw);
+	/*printf("\n choice = %d", *endw); */
 	}
 
 void shiftnwin_size(int *window, int *shift)
@@ -505,10 +506,10 @@ void shiftnwin_size(int *window, int *shift)
 	
 	printf("\n\n\tPlease select the window size for analysis (in codons)");
 	*window = getint("\n\t( or Press return for 10% of the total length)", 1, ((start->length)/3) -1, (((start->length)/3) -1)/10);
-	printf("\n choice = %d", *window);
+	/*printf("\n choice = %d", *window); */
 	printf("\n\n\tPlease select the shift size (in codons)");
 	*shift = getint("\n\t( or Press return for 50% of window size )", 1, *window, *window/2);
-	printf("\n choice = %d", *shift);
+	/*printf("\n choice = %d", *shift); */
 	}
 
 
@@ -576,7 +577,7 @@ void Li_Wu_movwin(void)
 
 
 
-	int i = 0, j = 0, startw = 0, endw = 0, moves = 0, window = 0, shift = 0;
+	int i = 0, startw = 0, endw = 0, moves = 0, window = 0, shift = 0;
 	int choice = 0;
 	
 	struct sequence *seq1 = start;
@@ -627,7 +628,7 @@ void Li_Wu_movwin(void)
 					
 					new->seq_num = seq2->seq_num;
 					new->Ks = malloc(((start->length/3 -1)/shift)*sizeof(int));
-					printf("Ks length= %d\n", ((start->length/3 -1)/shift));
+					/*printf("Ks length= %d\n", ((start->length/3 -1)/shift)); */
 					if(new->Ks == NULL)
 						{
 						printf("\n\t Out of memory\n");
@@ -743,7 +744,7 @@ void display_movwin(int window, int shift)
 	start = 0;
 	while(li_wu_start->Ks[i] != -2)
 		{
-		printf("i=%d\n", i);
+		/*printf("i=%d\n", i);*/
 		position = li_wu_start;
 		total = 0;
 		while(position != NULL)

@@ -64,7 +64,7 @@ extern struct sequence{
 
 	} list_entry;
 
-extern struct sequence *start, *last;
+extern struct sequence *start, *last, **allseqslist;
 
 extern struct synon{
 	

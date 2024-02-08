@@ -29,6 +29,7 @@
 //
 /*****************************************************************************/
 
+
 #include "externals.h"
 #include "adaptive_tree.h"
 #include "evolve.h"
@@ -39,8 +40,8 @@
 
 void adaptive_tree(int **ratio)
 	{
-	int i = 0, j=0, count = 0, mutation = FALSE, x = 0, y = 0, number = 0, gaps = 0, last = FALSE, done = FALSE;
-	struct sequence *seq1 = start, *position = NULL;
+	int i = 0, j=0, count = 0, mutation = FALSE, x = 0, y = 0, last = FALSE, done = FALSE;
+	struct sequence *seq1 = start;
 	float ***subst_matrix;   /* holds the likelihood of nucliotide substitutions at each fold site */
 	char nuc = '\0';
 
@@ -418,8 +419,6 @@ void is_mutation(struct node *position,int *mutation, char *nuc, int i, int j)
 void is_fixed(struct node *position, int i, int j, int **ratio, int *count, int last)
 	{
 	char nuc = 'a';
-	int fixed = TRUE, synon = TRUE, value = 0, polymorphic = FALSE;
-	int fixednew = TRUE, repl = 0, silent = 0;	
 	
 	if(position->node1 != NULL) is_fixed(position->node1, i, j, ratio, count, last);
 
@@ -886,7 +885,7 @@ void assign_codon_num(int i, int j, struct node *position)
 /* This function travels up through the tree assigning the ancestral nucliotides */	
 void assign_ances_up(int i, int j, struct node *position)
 	{
-	char tmp[5] = {'\0','\0','\0','\0','\0'},tmp1[5] = {'\0','\0','\0','\0','\0'}, *pointer = NULL;
+	char tmp[5] = {'\0','\0','\0','\0','\0'}, *pointer = NULL;
 	int l = 0, k = 0;
 
 	if(position->node1 != NULL) assign_ances_up(i, j, position->node1);
@@ -980,7 +979,6 @@ void assign_ances_up(int i, int j, struct node *position)
 void assign_root_ances(int i, int j)
 	{
 	int x = 0, found = FALSE;
-	char c = '\0';
 
 	while(tree_top->ancestor[x] != '\0') x++;
 		if(x > 1)
@@ -1185,7 +1183,7 @@ int check_distances(void)
 	/* If any value is incalculable, then we set it to twice the maximum value anywhere else in the distance matrix */
 	
 	
-	while(position)  /* Find all occurances of Nans in the distances, and mark them with a -1*/
+	while(position != NULL)  /* Find all occurances of Nans in the distances, and mark them with a -1*/
 		{
 		for(i=0; i<((num_of_seqs - (position->seq_num + 1)) - untagged); i++)
 			{
@@ -1220,7 +1218,7 @@ int check_distances(void)
 	position = li_wu_start;
 	if(Kavalue == TRUE || Ksvalue == TRUE)
 		{
-		while(position)  /* replace any -1 in the distance matrix with twice the max value from that matrix */
+		while(position != NULL)  /* replace any -1 in the distance matrix with twice the max value from that matrix */
 			{
 			for(i=0; i<((num_of_seqs - (position->seq_num + 1)) - untagged); i++)
 				{
@@ -1262,7 +1260,7 @@ void tally_distances(void)
 	
 	/* travel through the results linked list and calculate all Ka/Ks */
 	
-	while(position)
+	while(position!=NULL)
 		{
 		for(i=0; i<((num_of_seqs - (position->seq_num + 1)) - untagged); i++)
 			{
@@ -1308,7 +1306,7 @@ void allocate_distances(int k)
 	struct synon *position = li_wu_start;
 	struct sequence *place = start;
 	int i = 0, j = 0, last = FALSE, l = 0;
-	float tmp = 0, largest = 2;
+	float largest = 2;
 
 	/* assign distances array */
 	
@@ -1329,9 +1327,10 @@ void allocate_distances(int k)
 			}
 		}
 
-	for(i=0; i<num_of_seqs-untagged; i++)
+	for(i=0; i<num_of_seqs-untagged; i++){
 		for(j=0; j<num_of_seqs-untagged; j++)
 			distances[i][j] = 0;
+	}
 
 	
 
@@ -1340,9 +1339,10 @@ void allocate_distances(int k)
 		{
 	
 		 /* initialise the array tmat */
-		for(i=0; i<num_of_seqs-untagged; i++)
+		for(i=0; i<num_of_seqs-untagged; i++){
 			for(j=0; j<num_of_seqs-untagged; j++)
 				distances[i][j] = 0;
+		}
 		if(distance_written == TRUE) l = 4;
 		if(l == 3)
 			{
@@ -1355,7 +1355,7 @@ void allocate_distances(int k)
 		/* assign the results of distances from li_wu to the array tmat */		
 		j = 0;
 		position = li_wu_start;
-		while(position)
+		while(position != NULL)
 			{
 			for(i=0; i<((num_of_seqs - (position->seq_num + 1)) - untagged); i++)
 				{
@@ -1442,6 +1442,7 @@ void allocate_distances(int k)
 	
 				for(i=0; i<num_of_seqs-untagged; i++)
 					{
+
 					fprintf(dist, "%-10.10s", place->name);
 					for(j=0; j<num_of_seqs-untagged; j++)
 						{
@@ -1461,6 +1462,7 @@ void allocate_distances(int k)
 	 				fprintf(dist, "\n");
 					place = place->next;
 				}
+			
 			fclose(dist);
 			dist = NULL;
 			}
@@ -1471,7 +1473,7 @@ void allocate_distances(int k)
 
 	/* free up the memory used by li_wu_results */
 
-		while(li_wu_start)
+		while(li_wu_start != NULL)
 			{
 			position = li_wu_start->next;
 			free(li_wu_start->Ks);
@@ -1493,17 +1495,27 @@ void McDonald_Kreitman(void)
 /* 
    Calculate a tree using the distances in the num_of_seqs*num_of_seqs array d_mat.
 */
-{	int i=0, j=0, k = 0, method = 0, exit = FALSE, num = 0, error = FALSE, number = 0, count =0, title = TRUE, ans = FALSE, bracket = FALSE;
-	char choice = '\0', overflow = '\0', *pointer = NULL, last = '\0', c = '\0';
+{	int i=0, j=0, k = 0, num = 0, error = FALSE, count =0, ans = FALSE, bracket = FALSE;
+	char *pointer = NULL, lastc = '\0';
 	float **pvalue = NULL, **pvalue2 = NULL, *gChi = NULL, *gChi2 = NULL, **subs = NULL, **ratio2 = NULL, **tmp_ratio = NULL;
 	float ** standard_tree = NULL;
 	struct sequence *position = start;
-	struct node *previous = NULL;
+
 	int  **ratio = NULL; /* used to record the ratio calculated by the McDonald-Kreitman method. */
 	
-	FILE *nested = NULL, *subsfile = NULL; /* used for reading in a tree in nest parentheses format if desired */
+	FILE *subsfile = NULL; /* used for reading in a tree in nest parentheses format if desired */
 
-
+	/*Check input sequences and fix links */
+	for(i=0; i<num_of_seqs; i++){
+		if(i!= num_of_seqs-1)
+			allseqslist[i]->next=allseqslist[i+1];
+		else 
+			allseqslist[i]->next = NULL;
+		if(i!= 0)
+			allseqslist[i]->previous=allseqslist[i-1];
+		else
+			allseqslist[i]->previous = NULL;
+	}
 
 	distance_written = FALSE;
 	if(num_of_seqs<4) 
@@ -1530,9 +1542,11 @@ void McDonald_Kreitman(void)
 			}
 		}
 	
-	for(i=0; i<num_of_seqs-untagged; i++)
-		for(j=0; j<num_of_seqs - untagged; j++)
+	for(i=0; i<num_of_seqs-untagged; i++){
+		for(j=0; j<num_of_seqs - untagged; j++){
 			standard_tree[i][j] = 0;		
+		}
+	}
 
 	/* assign graphs */
 	graphs = malloc(((num_of_seqs - untagged)*sizeof(int **)));
@@ -1560,10 +1574,12 @@ void McDonald_Kreitman(void)
 			}
 		}
 	
-	for(i=0; i<num_of_seqs - untagged; i++)
-		for(j=0; j<4; j++)
+	for(i=0; i<num_of_seqs - untagged; i++){
+		for(j=0; j<4; j++){
 			for(k=0; k<start->length/3; k++)
 				graphs[i][j][k] = 0;
+		}
+	}
 	
 		
 	/* assign ratio;  the array is divided up as follows: */
@@ -1608,13 +1624,14 @@ void McDonald_Kreitman(void)
 			clean_exit();
 			}
 		}
-	for(i=0; i<(num_of_seqs - untagged ); i++)
+	for(i=0; i<(num_of_seqs - untagged ); i++){
 		for(j=0; j<4; j++)
 			{
 			ratio[i][j] = 0;	
 			ratio2[i][j] = 0;
 			tmp_ratio[i][j] = 0;
 			}
+	}
 
 	/* Assign gChi: this is used to stroe the chi vaules that are used to calculate the pvalues at one degree of freedom, it is being 
 		remembered so that if can be printed out for simulation testing (we can then look over 1000 runs of neutral data, the distribution of chi)
@@ -1711,7 +1728,7 @@ void McDonald_Kreitman(void)
 		{
 		if(!distance_written) tally_distances();
 		
-		allocate_distances(gen_opt[6]); 					/* allocate tmat */
+		allocate_distances(gen_opt[6]); 				/* allocate tmat */
 				
 		
 		n_joining_tree(standard_tree);				/* calculate the phylogenetic tree */
@@ -1784,25 +1801,27 @@ void McDonald_Kreitman(void)
 		/* print out the tree using + and - in a tree array */
 
 		position = start;
-		while(position && !position->tag) position = position->next;
+		while(position != NULL && !position->tag) position = position->next;
 
-		fprintf(outfile, "\n\n\n\n\t\t                                       ");
-		for(i=0; i<num_of_seqs-untagged; i++) fprintf(outfile, "\t%d ", i+1);
-		fprintf(outfile, "\n" );
-		for(i=0; i<num_of_seqs-untagged; i++)
-			{
-			fprintf(outfile, "%d %-41.41s", i+1, position->name);
-			for(j=0; j<num_of_seqs-untagged; j++)
+		if(position!=NULL){
+			fprintf(outfile, "\n\n\n\n\t\t                                       ");
+			for(i=0; i<num_of_seqs-untagged; i++) fprintf(outfile, "\t%d ", i+1);
+			fprintf(outfile, "\n" );
+			for(i=0; i<num_of_seqs-untagged; i++)
 				{
-				if(standard_tree[i][j] == 0) fprintf(outfile, " \t-");
-				else fprintf(outfile, " \t+");
+				fprintf(outfile, "%d %-41.41s", i+1, position->name);
+				for(j=0; j<num_of_seqs-untagged; j++)
+					{
+					if(standard_tree[i][j] == 0) fprintf(outfile, " \t-");
+					else fprintf(outfile, " \t+");
+					}
+				fprintf(outfile, "\n");
+				position = position->next;
+				while(position != NULL && !position->tag) position = position->next;	
+				if(position == NULL) i=num_of_seqs-untagged;
 				}
-			fprintf(outfile, "\n");
-			position = position->next;
-			while(position && !position->tag) position = position->next;	
-
+			fprintf(outfile, "\n\n\n\n");
 			}
-		fprintf(outfile, "\n\n\n\n");
 		}
 
 	if(!error)
@@ -1949,7 +1968,7 @@ void McDonald_Kreitman(void)
 		/* go through the sequences and get rid of any parentheses in the names, replace with "-"  */
 		
 		position = start;
-		while(position)
+		while(position!=NULL)
 			{
 			while((pointer = strchr(position->nickname, '(')) != NULL) pointer[0] = '_';
 			while((pointer = strchr(position->nickname, ')')) != NULL) pointer[0] = '_';
@@ -1975,9 +1994,9 @@ void McDonald_Kreitman(void)
 			if((outtree = fopen("result-tree.ph", "w")) == NULL)		/* check to see if the file can be opened/created */
 				printf("\n\n\tCannot open the output file, named result-tree.ph,\n Tree file not written\n\n");	
 		fprintf(outtree,"[Results from input file: %s\nCreevey, McInerney method: internal nodes labeled indicate where the ratios differed significantly]\n", filename);
-		write_tree1(tree_top, &last, &num, pvalue);
+		write_tree1(tree_top, &lastc, &num, pvalue);
 		fprintf(outtree, ";\n");
-		last = '\0'; num = 0;
+		lastc = '\0'; num = 0;
 		
 		yadf = fopen("yadf.out", "w");
 		assign_node_nums(tree_top, 0);
@@ -1988,13 +2007,13 @@ void McDonald_Kreitman(void)
 	/*  This has been commented out since the file yadf.out describes much better what the second tree used to....
 
 		fprintf(outtree,"\n[Dn/Ds ratios between neighbouring nodes, labels are where Ka/Ks > 1. for either the above branch (1) or the lower branch (2)]\n");
-		write_tree2(tree_top, &last, &num);
+		write_tree2(tree_top, &lastc, &num);
 		fprintf(outtree, ";\n");
 	*/	
 
-		last = '\0'; num = 0;
+		lastc = '\0'; num = 0;
 		fprintf(outtree,"\n[This tree has every node labeled just for reference, there are no results in the tree]\n");
-		write_tree3(tree_top, &last, &num, pvalue);
+		write_tree3(tree_top, &lastc, &num, pvalue);
 		fprintf(outtree, ";\n\n");
 		  
 		
@@ -2120,8 +2139,8 @@ void McDonald_Kreitman(void)
 
 int tree_choice(void)
 	{
-	int error = FALSE, exit = FALSE, method = 1, number = 0;
-	char c = '\0', overflow = '\0', ans = '\0';
+	int error = FALSE, exit = FALSE, method = 1;
+	char c = '\0', ans = '\0';
 	struct node *previous = NULL;
 	
 	
@@ -2217,8 +2236,8 @@ int tree_choice(void)
 /*new*/
 void n_joining_tree(float **tree)
 	{
-	int i = 0, j = 0, smli = 0, smlj = 0, x = 0, y = 0, k =0, nodes = 0, **seqs = NULL, **tmp2 = NULL;
-	float tot = 0, sml_dist = 0, assigned = 0, **d_mat = NULL, **tmp = NULL, second = 0, **net_div = NULL, total_div = 0, dr = 0, d2r = 0, to = 0;
+	int i = 0, j = 0, smli = 0, smlj = 0, x = 0, y = 0, nodes = 0, **seqs = NULL, **tmp2 = NULL;
+	float sml_dist = 0, assigned = 0, **d_mat = NULL, **tmp = NULL, second = 0, **net_div = NULL, total_div = 0, dr = 0, d2r = 0, to = 0;
 	
 	
 	nodes = num_of_seqs-untagged; /* nodes is the number of terminal nodes */
@@ -2257,8 +2276,10 @@ void n_joining_tree(float **tree)
 		}
 	
 	for(i=0; i<nodes; i++)
+		{
 		for(j=0; j<nodes; j++)
 			d_mat[i][j] = distances[i][j];    /* assign the array equal to the distance array paeed to the fuction */
+		}
 	
 	seqs = malloc(nodes*(sizeof(int*)));
 	if(seqs == NULL) 
@@ -2356,7 +2377,6 @@ void n_joining_tree(float **tree)
 
 		sml_dist = 1000;
 		total_div = 0;
-		tot = 0;
 		for(i=0; i<nodes; i++)
 			for(j=0; j<i; j++)
 				total_div += d_mat[i][j];
@@ -2651,8 +2671,8 @@ void g_test(float **ratio, float **pvalue, float *gChi )
 	{
 	float totf = 0, totp = 0, totr = 0, tots = 0, fulltot = 0, a = 0, b = 0, c = 0, d = 0, expected[4], g = 0, value1 = 0, value2 = 0, value3 = 0, value4 = 0, williams = 0;
 	float a2 = 0, b2 = 0, c2 = 0, d2 = 0, first = -2, antilog = 0;
-	float chi[2][10] ={0.99,   0.95,   0.90,  0.50, 0.20, 0.10,  0.05,  0.025,  0.01,  0.005,
-					   0.0002, 0.0039, 0.016,  0.45, 1.64, 2.706, 3.841, 5.024,  6.635, 7.87 };
+	float chi[2][10] ={{0.99,   0.95,   0.90,  0.50, 0.20, 0.10,  0.05,  0.025,  0.01,  0.005},
+					   {0.0002, 0.0039, 0.016,  0.45, 1.64, 2.706, 3.841, 5.024,  6.635, 7.87 }};
 
 	int i, j;
 	
@@ -2913,9 +2933,8 @@ float fctrl(float value)
 void output_tree(float **tree)
 	{
 	char **build = NULL, *temp = NULL, *pointer = NULL;
-	int i=0, j=0, k=0, joins = 0, paired = FALSE, notpaired = FALSE, first = TRUE, second = TRUE, third = TRUE, place = 0, **joined = NULL, which = 0, reference = 0, count = 0;
+	int i=0, j=0, k=0, joins = 0, paired = FALSE, notpaired = FALSE, first = TRUE, second = TRUE, place = 0, **joined = NULL, which = 0, reference = 0, count = 0;
 	struct sequence *position = NULL;
-	FILE *test = NULL;
 	
 
 
@@ -2974,7 +2993,7 @@ void output_tree(float **tree)
 	/* go through the sequences and get rid of any parentheses in the names, replace with "-"  */
 	
 	position = start;
-	while(position)
+	while(position!=NULL)
 		{
 		while((pointer = strchr(position->nickname, '(')) != NULL) pointer[0] = '_';
 		while((pointer = strchr(position->nickname, ')')) != NULL) pointer[0] = '_';
@@ -2994,7 +3013,6 @@ void output_tree(float **tree)
 		{
 		first = TRUE;
 		second = TRUE;
-		third = TRUE;
 		paired = notpaired = FALSE;
 		which = 0;
 		for(j=0; j<num_of_seqs - untagged; j++)
@@ -3008,7 +3026,7 @@ void output_tree(float **tree)
 			}
 		
 		position = start;
-		while(position && !position->tag) position = position->next;
+		while(position!=NULL && !position->tag) position = position->next;
 
 		for(j=0; j<(num_of_seqs - untagged); j++)
 			{
@@ -3120,7 +3138,7 @@ void output_tree(float **tree)
 				}
 				
 			position = position->next;
-			while(position && !position->tag) position = position->next;
+			while(position!=NULL && !position->tag) position = position->next;
 			}
 
 		}
@@ -3232,8 +3250,8 @@ void output_tree(float **tree)
 void substitution_matrix(float ***ratio)
 	{
 	struct sequence *position1 = start, *position2 = start->next;
-	int i = 0, j = 0, x = 0, y = 0, z = 0, total = 0, nuc_count[3][5] = {0,0,0,0,0 , 0,0,0,0,0 , 0,0,0,0,0};
-	float tmp = 0;
+	int i = 0, j = 0, x = 0, y = 0, z = 0, nuc_count[3][5] = {{0,0,0,0,0} , {0,0,0,0,0} , {0,0,0,0,0}};
+
 	for(i=0; i<3; i++)
 		for(j=0; j<5; j++)
 			for(x=0; x<5; x++)
@@ -3259,7 +3277,6 @@ void substitution_matrix(float ***ratio)
 				{
 				for(j = 0; j<3; j++)
 					{
-					total++;
 					for(x=0; x<5; x++)
 						{
 						if(what[x] == codons[position1->bases[i]][j]) break;
@@ -3366,7 +3383,7 @@ void define_outgroup(void)
 		else
 			{
 			position = start;
-			while(position)
+			while(position != NULL)
 				{
 				position->outgroup = FALSE;
 				position = position->next;
@@ -3396,7 +3413,7 @@ void define_outgroup(void)
 void assign_codon_up(int codon, struct node *position)
 	{
 	int tmp[66], other[66];  /* There are 64 codons plus a gap codon, so to make them into strings we add a'\0' at the end so the arrays need to be 66 in length */
-	int l = 0, k=0, x=0, found = FALSE;
+	int l = 0, found = FALSE;
 	
 	for(l=0; l<66; l++)	  /* initialise the arrays */
 		{
@@ -3542,7 +3559,6 @@ void assign_codon_up(int codon, struct node *position)
 void assign_root_codon(int codon)
 	{
 	int x = 0, y = 0, found = FALSE;
-	char c = '\0';
 
 	for(y=0; y<66; y++)
 		{
@@ -3627,9 +3643,9 @@ void assign_root_codon(int codon)
 	root though      */
 void assign_codons_down(int codon, struct node *position, float ***subst_matrix)
 	{
-	int x = 0, y = 0, i = 0, j = 0, num = 0, l = 0, k = 0, highest_codon = 0, found = FALSE;
+	int x = 0, y = 0, i = 0, j = 0, l = 0, k = 0, highest_codon = 0, found = FALSE;
 	float total = 0, highest_total = 0;
-	char tmp[66], other[66];
+	int tmp[66], other[66];
 	
 	for(i=0; i<66; i++)
 		{
