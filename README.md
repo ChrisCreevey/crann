@@ -10,6 +10,8 @@ We advise putting the resulting binary `crann` somewhere in your PATH like `~\bi
 
 To run Crann simply type `crann` and follow the menu.
 
+Detailed descriptions of the options are availailbe in the PDF manual provided above.
+
 # Overview
 CRANN is a software program written in the C programming language that can be used to investigate adaptive evolution in a number of ways. 
 The program requires a set of protein-coding DNA sequences, aligned so that the first residue of the alignment corresponds to the first position of a codon. 
